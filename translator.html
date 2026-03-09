@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Translator — EN › TR</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --panel-l: #0f1117;
+    --panel-r: #0d1210;
+    --accent-l: #4fc3f7;
+    --accent-r: #69f0ae;
+    --text: #e8eaf0;
+    --muted: #5a5f72;
+    --border: #1e2030;
+    --en-color: #b3e5fc;
+    --tr-color: #80cbc4;
+    --resp-en: #c8e6c9;
+    --resp-tr: #a5d6a7;
+    --glow-l: rgba(79, 195, 247, 0.08);
+    --glow-r: rgba(105, 240, 174, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-l); animation: pulse 2s infinite; }
+
+  @keyframes pulse {
+    0%,100% { opacity:1; transform: scale(1); }
+    50% { opacity:0.4; transform: scale(0.7); }
+  }
+
+  .controls { display: flex; align-items: center; gap: 10px; }
+  .api-group { display: flex; align-items: center; gap: 6px; }
+
+  .api-input {
+    background: var(--panel-l);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    padding: 7px 12px;
+    border-radius: 6px;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-input:focus { border-color: var(--accent-l); }
+  .api-input::placeholder { color: var(--muted); }
+  .api-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .btn-save {
+    background: rgba(105,240,174,0.15);
+    color: var(--accent-r);
+    border: 1px solid rgba(105,240,174,0.3);
+  }
+  .btn-save:hover { background: rgba(105,240,174,0.25); }
+
+  .btn-del-key {
+    background: rgba(239,83,80,0.12);
+    color: #ef5350;
+    border: 1px solid rgba(239,83,80,0.25);
+    display: none;
+  }
+  .btn-del-key:hover { background: rgba(239,83,80,0.22); }
+
+  .btn-start {
+    background: var(--accent-l);
+    color: #000;
+    padding: 8px 20px;
+    font-size: 0.75rem;
+  }
+  .btn-start:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn-start.active {
+    background: #ef5350;
+    color: #fff;
+    animation: rec-pulse 1.5s infinite;
+  }
+
+  @keyframes rec-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(239,83,80,0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(239,83,80,0); }
+  }
+
+  .btn-clear {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.7rem;
+  }
+  .btn-clear:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-tr-speak {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.73rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,183,77,0.3);
+    cursor: pointer;
+    width: 100%;
+    background: rgba(255,183,77,0.08);
+    color: #ffb74d;
+    transition: all 0.2s;
+  }
+  .btn-tr-speak:hover { background: rgba(255,183,77,0.18); }
+  .btn-tr-speak.active {
+    background: rgba(255,183,77,0.2);
+    color: #ffe082;
+    border-color: rgba(255,183,77,0.55);
+    animation: tr-pulse 1.5s infinite;
+  }
+  @keyframes tr-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,183,77,0.3); }
+    50% { box-shadow: 0 0 0 5px rgba(255,183,77,0); }
+  }
+
+  .status-pill {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--border);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .status-pill.listening { background: rgba(105,240,174,0.15); color: var(--accent-r); }
+  .status-pill.processing { background: rgba(79,195,247,0.15); color: var(--accent-l); }
+  .status-pill.error { background: rgba(239,83,80,0.15); color: #ef5350; }
+  .status-pill.saved { background: rgba(105,240,174,0.12); color: var(--accent-r); }
+
+  .col-labels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .col-label {
+    padding: 10px 28px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .col-label-l { color: var(--accent-l); border-right: 1px solid var(--border); background: var(--glow-l); }
+  .col-label-r { color: var(--accent-r); background: var(--glow-r); }
+
+  .col-tag {
+    font-size: 0.58rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+  .col-label-l .col-tag { background: rgba(79,195,247,0.15); color: var(--accent-l); }
+  .col-label-r .col-tag { background: rgba(105,240,174,0.15); color: var(--accent-r); }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .panel-l { border-right: 1px solid var(--border); background: radial-gradient(ellipse at top left, var(--glow-l), transparent 60%); }
+  .panel-r { background: radial-gradient(ellipse at top right, var(--glow-r), transparent 60%); }
+
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .msg-card {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    animation: slideIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    opacity: 0;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .msg-en, .msg-resp-en {
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border);
+  }
+  .msg-en { color: var(--en-color); background: rgba(179,229,252,0.04); }
+  .msg-resp-en { color: var(--resp-en); background: rgba(200,230,201,0.04); }
+
+  .msg-tr, .msg-resp-tr {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+  }
+  .msg-tr { color: var(--tr-color); background: rgba(128,203,196,0.05); }
+  .msg-resp-tr { color: var(--resp-tr); background: rgba(165,214,167,0.05); }
+
+  .lang-badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    vertical-align: middle;
+  }
+  .badge-en { background: rgba(79,195,247,0.2); color: var(--accent-l); }
+  .badge-tr { background: rgba(128,203,196,0.2); color: var(--tr-color); }
+  .badge-resp { background: rgba(105,240,174,0.2); color: var(--accent-r); }
+  .badge-tr-input { background: rgba(255,183,77,0.2); color: #ffb74d; }
+
+  .msg-meta {
+    padding: 5px 16px;
+    font-size: 0.6rem;
+    color: var(--muted);
+    background: rgba(0,0,0,0.15);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .loading-card {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideIn 0.3s ease forwards;
+    opacity: 0;
+  }
+  .loading-dots { display: flex; gap: 5px; }
+  .loading-dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-l);
+    animation: dot-bounce 1.2s infinite;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--accent-r); }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-bounce {
+    0%,80%,100% { transform: translateY(0); opacity:0.4; }
+    40% { transform: translateY(-6px); opacity:1; }
+  }
+  .loading-text { font-size: 0.75rem; color: var(--muted); }
+
+  .interim-bar {
+    padding: 10px 24px;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.3);
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    font-style: italic;
+  }
+  .interim-icon {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent-r); flex-shrink: 0;
+    animation: pulse 1s infinite;
+  }
+
+  .tr-speak-bar {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.3);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .tr-interim {
+    font-size: 0.72rem;
+    color: #ffb74d;
+    min-height: 16px;
+    font-style: italic;
+    opacity: 0.85;
+    padding: 0 2px;
+  }
+
+  .waveform { display: flex; align-items: center; gap: 3px; height: 20px; }
+  .waveform-bar {
+    width: 3px; border-radius: 2px;
+    background: var(--accent-l);
+    animation: wave 0.8s ease-in-out infinite;
+  }
+  .waveform-bar:nth-child(2) { animation-delay:0.1s; height:60%; }
+  .waveform-bar:nth-child(3) { animation-delay:0.2s; height:100%; }
+  .waveform-bar:nth-child(4) { animation-delay:0.3s; height:70%; }
+  .waveform-bar:nth-child(5) { animation-delay:0.15s; height:50%; }
+  @keyframes wave {
+    0%,100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+  .waveform-wrap { display:none; }
+  .waveform-wrap.active { display:flex; align-items:center; gap:6px; }
+
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px; color: var(--muted); font-size: 0.8rem;
+    text-align: center; padding: 24px;
+  }
+  .empty-icon { font-size: 2rem; opacity: 0.3; }
+  .empty-hint { font-size: 0.7rem; opacity: 0.6; max-width: 200px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    LIVE TRANSLATOR
+  </div>
+  <div class="controls">
+    <div class="api-group">
+      <input class="api-input" id="apiKey" type="password" placeholder="Groq API Key (gsk_...)">
+      <button class="btn btn-save" id="saveKeyBtn" onclick="saveApiKey()">💾 Kaydet</button>
+      <button class="btn btn-del-key" id="delKeyBtn" onclick="deleteApiKey()">🗑 Sil</button>
+    </div>
+    <span class="status-pill" id="statusPill">HAZIR</span>
+    <div class="waveform-wrap" id="waveformWrap">
+      <div class="waveform">
+        <div class="waveform-bar" style="height:40%"></div>
+        <div class="waveform-bar" style="height:60%"></div>
+        <div class="waveform-bar" style="height:100%"></div>
+        <div class="waveform-bar" style="height:70%"></div>
+        <div class="waveform-bar" style="height:50%"></div>
+      </div>
+    </div>
+    <button class="btn btn-clear" onclick="clearAll()">TEMİZLE</button>
+    <button class="btn btn-start" id="startBtn" onclick="toggleListening()">▶ BAŞLAT</button>
+  </div>
+</header>
+
+<div class="col-labels">
+  <div class="col-label col-label-l">
+    🎤 Konuşma
+    <span class="col-tag">İngilizce → Türkçe</span>
+  </div>
+  <div class="col-label col-label-r">
+    💡 Yanıt / Türkçe Konuşma
+    <span class="col-tag">AI Yanıt + TR → EN</span>
+  </div>
+</div>
+
+<div class="panels">
+  <div class="panel panel-l">
+    <div class="messages" id="leftMessages">
+      <div class="empty-state" id="leftEmpty">
+        <div class="empty-icon">🎙️</div>
+        <div>Ses bekleniyor...</div>
+        <div class="empty-hint">API anahtarını kaydet, başlat düğmesine bas ve İngilizce konuş</div>
+      </div>
+    </div>
+    <div class="interim-bar">
+      <div class="interim-icon" style="display:none" id="interimDot"></div>
+      <span id="interimText">Dinleme başlatılmadı</span>
+    </div>
+  </div>
+
+  <div class="panel panel-r">
+    <div class="messages" id="rightMessages">
+      <div class="empty-state" id="rightEmpty">
+        <div class="empty-icon">💬</div>
+        <div>Yanıt bekleniyor...</div>
+        <div class="empty-hint">İngilizce konuşma algılandığında veya Türkçe konuştuğunuzda burada görünür</div>
+      </div>
+    </div>
+    <div class="tr-speak-bar">
+      <div class="tr-interim" id="trInterim"></div>
+      <button class="btn-tr-speak" id="trSpeakBtn" onclick="toggleTrSpeak()">🇹🇷 Türkçe Konuş → İngilizceye Çevir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let recognition = null;
+let isListening = false;
+let processingQueue = [];
+let isProcessing = false;
+let trRecognition = null;
+let isTrListening = false;
+
+const STORAGE_KEY = 'groq_api_key_v1';
+
+// ── ON LOAD ──
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    document.getElementById('apiKey').value = saved;
+    document.getElementById('apiKey').disabled = true;
+    document.getElementById('saveKeyBtn').style.display = 'none';
+    document.getElementById('delKeyBtn').style.display = 'inline-block';
+    setStatus('ANAHTAR KAYITLI', 'saved');
+  }
+});
+
+// ── API KEY SAVE / DELETE ──
+function saveApiKey() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (!key) { alert('Lütfen bir API anahtarı girin!'); return; }
+  localStorage.setItem(STORAGE_KEY, key);
+  document.getElementById('apiKey').disabled = true;
+  document.getElementById('saveKeyBtn').style.display = 'none';
+  document.getElementById('delKeyBtn').style.display = 'inline-block';
+  setStatus('ANAHTAR KAYITLI', 'saved');
+}
+
+function deleteApiKey() {
+  if (!confirm('API anahtarı silinsin mi?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('apiKey').value = '';
+  document.getElementById('apiKey').disabled = false;
+  document.getElementById('saveKeyBtn').style.display = 'inline-block';
+  document.getElementById('delKeyBtn').style.display = 'none';
+  setStatus('ANAHTAR SİLİNDİ', '');
+}
+
+function getApiKey() {
+  return localStorage.getItem(STORAGE_KEY) || document.getElementById('apiKey').value.trim();
+}
+
+// ── ENGLISH RECOGNITION ──
+function setupRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('Chrome kullanın — Web Speech API gerekli.'); return false; }
+
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  recognition.onstart = () => {
+    setStatus('DİNLİYOR', 'listening');
+    document.getElementById('interimDot').style.display = 'block';
+    document.getElementById('interimText').textContent = 'Konuşmanızı bekliyorum...';
+    document.getElementById('waveformWrap').classList.add('active');
+  };
+
+  recognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        const c = t.trim();
+        if (c.length > 2) { processingQueue.push(c); processNext(); }
+        interim = '';
+      } else { interim += t; }
+    }
+    if (interim) document.getElementById('interimText').textContent = '▸ ' + interim;
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === 'no-speech' || e.error === 'aborted') return;
+    setStatus('HATA: ' + e.error, 'error');
+  };
+
+  recognition.onend = () => {
+    if (isListening) {
+      setTimeout(() => { try { recognition.start(); } catch(e){} }, 200);
+    } else {
+      setStatus('DURDURULDU', '');
+      document.getElementById('waveformWrap').classList.remove('active');
+      document.getElementById('interimDot').style.display = 'none';
+      document.getElementById('interimText').textContent = 'Dinleme durduruldu';
+    }
+  };
+  return true;
+}
+
+function toggleListening() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Lütfen önce API anahtarını girin ve kaydedin!'); return; }
+  const btn = document.getElementById('startBtn');
+  if (!isListening) {
+    if (!recognition && !setupRecognition()) return;
+    isListening = true;
+    btn.textContent = '⏹ DURDUR';
+    btn.classList.add('active');
+    try { recognition.start(); } catch(e) {}
+  } else {
+    isListening = false;
+    btn.textContent = '▶ BAŞLAT';
+    btn.classList.remove('active');
+    try { recognition.stop(); } catch(e) {}
+  }
+}
+
+// ── TURKISH RECOGNITION ──
+function setupTrRecognition() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return false;
+
+  trRecognition = new SR();
+  trRecognition.lang = 'tr-TR';
+  trRecognition.continuous = false;
+  trRecognition.interimResults = true;
+
+  trRecognition.onresult = (e) => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        const c = t.trim();
+        if (c.length > 1) { document.getElementById('trInterim').textContent = ''; processTurkish(c); }
+      } else { interim += t; }
+    }
+    if (interim) document.getElementById('trInterim').textContent = '▸ ' + interim;
+  };
+
+  trRecognition.onerror = (e) => { if (e.error !== 'no-speech') console.error('TR err:', e.error); };
+
+  trRecognition.onend = () => {
+    isTrListening = false;
+    const btn = document.getElementById('trSpeakBtn');
+    btn.textContent = '🇹🇷 Türkçe Konuş → İngilizceye Çevir';
+    btn.classList.remove('active');
+    document.getElementById('trInterim').textContent = '';
+  };
+
+  return true;
+}
+
+function toggleTrSpeak() {
+  const apiKey = getApiKey();
+  if (!apiKey) { alert('Lütfen önce API anahtarını kaydedin!'); return; }
+  const btn = document.getElementById('trSpeakBtn');
+
+  if (!isTrListening) {
+    if (!trRecognition && !setupTrRecognition()) return;
+    isTrListening = true;
+    btn.textContent = '⏹ Dinleniyor... (durdurmak için tıkla)';
+    btn.classList.add('active');
+    document.getElementById('trInterim').textContent = 'Türkçe konuşun...';
+    try { trRecognition.start(); } catch(e) {}
+  } else {
+    isTrListening = false;
+    try { trRecognition.stop(); } catch(e) {}
+  }
+}
+
+async function processTurkish(turkishText) {
+  const apiKey = getApiKey();
+  const timestamp = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const loadId = addLoading('rightMessages', 'İngilizceye çevriliyor...');
+  hideEmpty();
+
+  try {
+    const result = await callGroqTurkish(apiKey, turkishText);
+    removeLoading(loadId);
+    addTrCard(turkishText, result.english, timestamp);
+  } catch(err) {
+    removeLoading(loadId);
+    const el = document.createElement('div');
+    el.className = 'msg-card';
+    el.style.borderColor = '#ef5350';
+    el.innerHTML = `<div style="padding:12px 16px;font-size:0.75rem;color:#ef5350;">⚠ Hata: ${escHtml(err.message)}</div>`;
+    appendMsg('rightMessages', el);
+  }
+}
+
+// ── PROCESS QUEUE ──
+async function processNext() {
+  if (isProcessing || processingQueue.length === 0) return;
+  isProcessing = true;
+  const text = processingQueue.shift();
+  await processUtterance(text);
+  isProcessing = false;
+  processNext();
+}
+
+async function processUtterance(englishText) {
+  const apiKey = getApiKey();
+  const timestamp = new Date().toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const leftLoadId = addLoading('leftMessages', 'Çevriliyor...');
+  const rightLoadId = addLoading('rightMessages', 'Yanıt üretiliyor...');
+  setStatus('İŞLENİYOR', 'processing');
+
+  try {
+    const result = await callGroq(apiKey, englishText);
+    removeLoading(leftLoadId);
+    removeLoading(rightLoadId);
+    addLeftCard(englishText, result.translation, timestamp);
+    addRightCard(result.response, result.responseTr, timestamp);
+    hideEmpty();
+    setStatus('DİNLİYOR', 'listening');
+  } catch (err) {
+    removeLoading(leftLoadId);
+    removeLoading(rightLoadId);
+    setStatus('API HATASI', 'error');
+    addErrorCard(englishText, err.message, timestamp);
+  }
+}
+
+// ── GROQ: EN → TR + Reply ──
+async function callGroq(apiKey, text) {
+  const prompt = `Someone said in English during a Teams call: "${text}"\n\nReturn ONLY valid JSON (no markdown):\n{"translation":"Turkish translation","response":"Smart natural English reply (max 2 sentences)","responseTr":"Turkish translation of the reply"}`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 1000,
+      messages: [
+        { role: 'system', content: 'Translation and conversation assistant. Always respond ONLY with valid JSON, no markdown, no backticks.' },
+        { role: 'user', content: prompt }
+      ]
+    })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error(e?.error?.message || `HTTP ${res.status}`); }
+  const data = await res.json();
+  return JSON.parse(data.choices[0].message.content.replace(/```json|```/g,'').trim());
+}
+
+// ── GROQ: TR → EN ──
+async function callGroqTurkish(apiKey, text) {
+  const prompt = `Translate this Turkish text to natural English: "${text}"\n\nReturn ONLY valid JSON: {"english":"English translation"}`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 400,
+      messages: [
+        { role: 'system', content: 'Translation assistant. Respond ONLY with valid JSON.' },
+        { role: 'user', content: prompt }
+      ]
+    })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error(e?.error?.message || `HTTP ${res.status}`); }
+  const data = await res.json();
+  return JSON.parse(data.choices[0].message.content.replace(/```json|```/g,'').trim());
+}
+
+// ── DOM ──
+function addLeftCard(en, tr, time) {
+  const el = document.createElement('div');
+  el.className = 'msg-card';
+  el.innerHTML = `
+    <div class="msg-en"><span class="lang-badge badge-en">EN</span>${escHtml(en)}</div>
+    <div class="msg-tr"><span class="lang-badge badge-tr">TR</span>${escHtml(tr)}</div>
+    <div class="msg-meta"><span>${time}</span><span>konuşma</span></div>`;
+  appendMsg('leftMessages', el);
+}
+
+function addRightCard(en, tr, time) {
+  const el = document.createElement('div');
+  el.className = 'msg-card';
+  el.innerHTML = `
+    <div class="msg-resp-en"><span class="lang-badge badge-resp">EN</span>${escHtml(en)}</div>
+    <div class="msg-resp-tr"><span class="lang-badge badge-tr">TR</span>${escHtml(tr)}</div>
+    <div class="msg-meta"><span>${time}</span><span>önerilen yanıt</span></div>`;
+  appendMsg('rightMessages', el);
+}
+
+function addTrCard(tr, en, time) {
+  const el = document.createElement('div');
+  el.className = 'msg-card';
+  el.style.borderColor = 'rgba(255,183,77,0.3)';
+  el.innerHTML = `
+    <div class="msg-resp-en" style="background:rgba(255,183,77,0.04)"><span class="lang-badge badge-tr-input">TR</span>${escHtml(tr)}</div>
+    <div class="msg-resp-tr" style="color:#ffe082;background:rgba(255,183,77,0.04)"><span class="lang-badge badge-en">EN</span>${escHtml(en)}</div>
+    <div class="msg-meta"><span>${time}</span><span>türkçe → ingilizce</span></div>`;
+  appendMsg('rightMessages', el);
+}
+
+function addErrorCard(en, errMsg, time) {
+  const el = document.createElement('div');
+  el.className = 'msg-card';
+  el.style.borderColor = '#ef5350';
+  el.innerHTML = `
+    <div class="msg-en" style="opacity:0.5"><span class="lang-badge badge-en">EN</span>${escHtml(en)}</div>
+    <div style="padding:10px 16px;font-size:0.75rem;color:#ef5350;">⚠ API Hatası: ${escHtml(errMsg)}</div>
+    <div class="msg-meta"><span>${time}</span><span>hata</span></div>`;
+  appendMsg('leftMessages', el);
+}
+
+let loadCounter = 0;
+function addLoading(containerId, label) {
+  const id = 'load-' + (++loadCounter);
+  const el = document.createElement('div');
+  el.className = 'loading-card';
+  el.id = id;
+  el.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div><span class="loading-text">${label}</span>`;
+  appendMsg(containerId, el);
+  return id;
+}
+
+function removeLoading(id) { document.getElementById(id)?.remove(); }
+
+function appendMsg(containerId, el) {
+  const c = document.getElementById(containerId);
+  c.appendChild(el);
+  c.scrollTop = c.scrollHeight;
+}
+
+function hideEmpty() {
+  document.getElementById('leftEmpty')?.remove();
+  document.getElementById('rightEmpty')?.remove();
+}
+
+function clearAll() {
+  document.getElementById('leftMessages').innerHTML = '';
+  document.getElementById('rightMessages').innerHTML = '';
+  document.getElementById('interimText').textContent = isListening ? 'Konuşmanızı bekliyorum...' : 'Dinleme başlatılmadı';
+}
+
+function setStatus(text, type) {
+  const pill = document.getElementById('statusPill');
+  pill.textContent = text;
+  pill.className = 'status-pill' + (type ? ' ' + type : '');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
