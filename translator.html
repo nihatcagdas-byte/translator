@@ -6,175 +6,216 @@
 <title>Live Translator — EN › TR</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  [data-theme="dark"] {
-    --bg:#0a0a0f; --bg2:#0f1117;
-    --panel-l-bg:radial-gradient(ellipse at top left,rgba(79,195,247,0.08),transparent 60%);
-    --panel-r-bg:radial-gradient(ellipse at top right,rgba(105,240,174,0.08),transparent 60%);
-    --text:#e8eaf0; --muted:#5a5f72; --border:#1e2030;
-    --header-bg:rgba(10,10,15,0.95); --card-bg:transparent; --interim-bg:rgba(0,0,0,0.3);
-    --msg-top-en:rgba(179,229,252,0.04); --msg-bot-tr:rgba(128,203,196,0.05);
-    --msg-top-resp:rgba(200,230,201,0.04); --msg-bot-resp-tr:rgba(165,214,167,0.05);
-    --input-bg:#0d0f18; --input-border:#2a2d40;
-  }
-  [data-theme="light"] {
-    --bg:#f0f2f8; --bg2:#ffffff;
-    --panel-l-bg:radial-gradient(ellipse at top left,rgba(79,195,247,0.06),transparent 60%);
-    --panel-r-bg:radial-gradient(ellipse at top right,rgba(105,240,174,0.06),transparent 60%);
-    --text:#1a1c2a; --muted:#8890aa; --border:#d8dce8;
-    --header-bg:rgba(240,242,248,0.97); --card-bg:#ffffff; --interim-bg:rgba(240,242,248,0.8);
-    --msg-top-en:rgba(79,195,247,0.07); --msg-bot-tr:rgba(128,203,196,0.08);
-    --msg-top-resp:rgba(105,240,174,0.07); --msg-bot-resp-tr:rgba(105,240,174,0.05);
-    --input-bg:#f8f9fc; --input-border:#c8cede;
-  }
-  :root {
-    --accent-l:#4fc3f7; --accent-r:#69f0ae;
-    --en-color:#b3e5fc; --tr-color:#80cbc4; --resp-en:#c8e6c9; --resp-tr:#a5d6a7;
-    --font-size:0.88rem;
-  }
-  [data-theme="light"] { --en-color:#1565c0; --tr-color:#00695c; --resp-en:#2e7d32; --resp-tr:#388e3c; }
+/* ── THEMES ── */
+[data-theme="dark"] {
+  --bg:#0a0a0f; --bg2:#0f1117; --bg3:#13151f;
+  --panel-l-bg:radial-gradient(ellipse at top left,rgba(79,195,247,0.07),transparent 60%);
+  --panel-r-bg:radial-gradient(ellipse at top right,rgba(105,240,174,0.07),transparent 60%);
+  --text:#e8eaf0; --muted:#5a5f72; --border:#1e2030;
+  --header-bg:rgba(10,10,15,0.97); --card-bg:transparent; --interim-bg:rgba(0,0,0,0.25);
+  --msg-top-en:rgba(179,229,252,0.04); --msg-bot-tr:rgba(128,203,196,0.05);
+  --msg-top-resp:rgba(200,230,201,0.04); --msg-bot-resp-tr:rgba(165,214,167,0.05);
+  --input-bg:#0d0f18; --input-border:#2a2d40;
+  --panel-side-bg:#0c0e16; --modal-bg:#0f1117;
+}
+[data-theme="light"] {
+  --bg:#f0f2f8; --bg2:#ffffff; --bg3:#f8f9fc;
+  --panel-l-bg:radial-gradient(ellipse at top left,rgba(79,195,247,0.06),transparent 60%);
+  --panel-r-bg:radial-gradient(ellipse at top right,rgba(105,240,174,0.06),transparent 60%);
+  --text:#1a1c2a; --muted:#8890aa; --border:#d8dce8;
+  --header-bg:rgba(240,242,248,0.97); --card-bg:#ffffff; --interim-bg:rgba(240,242,248,0.8);
+  --msg-top-en:rgba(79,195,247,0.07); --msg-bot-tr:rgba(128,203,196,0.08);
+  --msg-top-resp:rgba(105,240,174,0.07); --msg-bot-resp-tr:rgba(105,240,174,0.05);
+  --input-bg:#f8f9fc; --input-border:#c8cede;
+  --panel-side-bg:#eef0f6; --modal-bg:#ffffff;
+}
+:root {
+  --accent-l:#4fc3f7; --accent-r:#69f0ae;
+  --en-color:#b3e5fc; --tr-color:#80cbc4;
+  --font-size:0.88rem;
+}
+[data-theme="light"] { --en-color:#1565c0; --tr-color:#00695c; }
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'DM Mono',monospace; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; transition:background 0.3s,color 0.3s; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Mono',monospace; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; transition:background 0.3s,color 0.3s; }
 
-  /* HEADER */
-  header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; border-bottom:1px solid var(--border); background:var(--header-bg); backdrop-filter:blur(12px); flex-shrink:0; gap:8px; flex-wrap:wrap; }
-  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; letter-spacing:0.08em; display:flex; align-items:center; gap:8px; white-space:nowrap; }
-  .logo-dot { width:7px; height:7px; border-radius:50%; background:var(--accent-l); animation:pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-  .controls { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-  .api-group { display:flex; align-items:center; gap:5px; }
-  .api-input { background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.7rem; padding:6px 10px; border-radius:6px; width:195px; outline:none; transition:border-color 0.2s; }
-  .api-input:focus { border-color:var(--accent-l); }
-  .api-input::placeholder { color:var(--muted); }
-  .api-input:disabled { opacity:0.5; cursor:not-allowed; }
-  .btn { font-family:'Syne',sans-serif; font-weight:700; font-size:0.67rem; letter-spacing:0.07em; padding:6px 11px; border-radius:6px; border:none; cursor:pointer; transition:all 0.2s; text-transform:uppercase; white-space:nowrap; background:var(--bg2); color:var(--text); }
-  .btn-save { background:rgba(105,240,174,0.15); color:var(--accent-r); border:1px solid rgba(105,240,174,0.3); }
-  .btn-save:hover { background:rgba(105,240,174,0.25); }
-  .btn-del-key { background:rgba(239,83,80,0.12); color:#ef5350; border:1px solid rgba(239,83,80,0.25); display:none; }
-  .btn-del-key:hover { background:rgba(239,83,80,0.22); }
-  .btn-clear { border:1px solid var(--border); color:var(--muted); }
-  .btn-clear:hover { border-color:var(--muted); color:var(--text); }
-  .btn-start { background:var(--accent-l); color:#000; padding:7px 16px; font-size:0.7rem; }
-  .btn-start:hover { filter:brightness(1.12); transform:translateY(-1px); }
-  .btn-start.active { background:#ef5350; color:#fff; animation:rec-pulse 1.5s infinite; }
-  @keyframes rec-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,83,80,0.4)} 50%{box-shadow:0 0 0 6px rgba(239,83,80,0)} }
-  .toolbar-group { display:flex; align-items:center; gap:5px; padding:0 4px; border-left:1px solid var(--border); }
-  .icon-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:5px 8px; cursor:pointer; font-size:0.78rem; transition:all 0.2s; line-height:1; white-space:nowrap; }
-  .icon-btn:hover { border-color:var(--accent-l); color:var(--text); }
-  .icon-btn.active-filter { border-color:#ffb74d; color:#ffb74d; background:rgba(255,183,77,0.1); }
-  .icon-btn.active-toggle { border-color:var(--accent-r); color:var(--accent-r); background:rgba(105,240,174,0.1); }
-  .font-size-wrap { display:flex; align-items:center; gap:3px; }
-  .font-label { font-size:0.6rem; color:var(--muted); }
-  .status-pill { font-size:0.6rem; padding:4px 9px; border-radius:20px; background:var(--border); color:var(--muted); letter-spacing:0.08em; white-space:nowrap; }
-  .status-pill.listening { background:rgba(105,240,174,0.15); color:var(--accent-r); }
-  .status-pill.processing { background:rgba(79,195,247,0.15); color:var(--accent-l); }
-  .status-pill.error { background:rgba(239,83,80,0.15); color:#ef5350; }
-  .status-pill.saved { background:rgba(105,240,174,0.12); color:var(--accent-r); }
-  .waveform { display:flex; align-items:center; gap:3px; height:18px; }
-  .waveform-bar { width:3px; border-radius:2px; background:var(--accent-l); animation:wave 0.8s ease-in-out infinite; }
-  .waveform-bar:nth-child(2){animation-delay:0.1s;height:60%} .waveform-bar:nth-child(3){animation-delay:0.2s;height:100%} .waveform-bar:nth-child(4){animation-delay:0.3s;height:70%} .waveform-bar:nth-child(5){animation-delay:0.15s;height:50%}
-  @keyframes wave { 0%,100%{transform:scaleY(0.4)} 50%{transform:scaleY(1)} }
-  .waveform-wrap { display:none; }
-  .waveform-wrap.active { display:flex; align-items:center; gap:5px; }
+/* ── HEADER ── */
+header { display:flex; align-items:center; justify-content:space-between; padding:9px 18px; border-bottom:1px solid var(--border); background:var(--header-bg); backdrop-filter:blur(12px); flex-shrink:0; gap:6px; flex-wrap:wrap; }
+.logo { font-family:'Syne',sans-serif; font-weight:800; font-size:0.92rem; letter-spacing:0.08em; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.logo-dot { width:7px; height:7px; border-radius:50%; background:var(--accent-l); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.controls { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.api-group { display:flex; align-items:center; gap:4px; }
+.api-input { background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.69rem; padding:5px 9px; border-radius:6px; width:185px; outline:none; transition:border-color 0.2s; }
+.api-input:focus { border-color:var(--accent-l); }
+.api-input::placeholder { color:var(--muted); }
+.api-input:disabled { opacity:0.5; cursor:not-allowed; }
+.btn { font-family:'Syne',sans-serif; font-weight:700; font-size:0.65rem; letter-spacing:0.07em; padding:5px 10px; border-radius:6px; border:none; cursor:pointer; transition:all 0.2s; text-transform:uppercase; white-space:nowrap; background:var(--bg2); color:var(--text); }
+.btn-save { background:rgba(105,240,174,0.15); color:var(--accent-r); border:1px solid rgba(105,240,174,0.3); }
+.btn-save:hover { background:rgba(105,240,174,0.25); }
+.btn-del-key { background:rgba(239,83,80,0.12); color:#ef5350; border:1px solid rgba(239,83,80,0.25); display:none; }
+.btn-del-key:hover { background:rgba(239,83,80,0.22); }
+.btn-clear { border:1px solid var(--border); color:var(--muted); }
+.btn-clear:hover { border-color:var(--muted); color:var(--text); }
+.btn-start { background:var(--accent-l); color:#000; padding:6px 15px; font-size:0.68rem; }
+.btn-start:hover { filter:brightness(1.12); transform:translateY(-1px); }
+.btn-start.active { background:#ef5350; color:#fff; animation:rec-pulse 1.5s infinite; }
+@keyframes rec-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,83,80,0.4)} 50%{box-shadow:0 0 0 6px rgba(239,83,80,0)} }
+.toolbar-group { display:flex; align-items:center; gap:4px; padding:0 4px; border-left:1px solid var(--border); }
+.icon-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:6px; padding:4px 7px; cursor:pointer; font-size:0.76rem; transition:all 0.2s; line-height:1; white-space:nowrap; }
+.icon-btn:hover { border-color:var(--accent-l); color:var(--text); }
+.icon-btn.active-filter { border-color:#ffb74d; color:#ffb74d; background:rgba(255,183,77,0.1); }
+.icon-btn.panel-active { border-color:var(--accent-r); color:var(--accent-r); background:rgba(105,240,174,0.1); }
+.font-size-wrap { display:flex; align-items:center; gap:3px; }
+.font-label { font-size:0.59rem; color:var(--muted); }
+.status-pill { font-size:0.59rem; padding:3px 9px; border-radius:20px; background:var(--border); color:var(--muted); letter-spacing:0.08em; white-space:nowrap; }
+.status-pill.listening { background:rgba(105,240,174,0.15); color:var(--accent-r); }
+.status-pill.processing { background:rgba(79,195,247,0.15); color:var(--accent-l); }
+.status-pill.error { background:rgba(239,83,80,0.15); color:#ef5350; }
+.status-pill.saved { background:rgba(105,240,174,0.12); color:var(--accent-r); }
+.waveform { display:flex; align-items:center; gap:3px; height:16px; }
+.waveform-bar { width:3px; border-radius:2px; background:var(--accent-l); animation:wave 0.8s ease-in-out infinite; }
+.waveform-bar:nth-child(2){animation-delay:0.1s;height:60%} .waveform-bar:nth-child(3){animation-delay:0.2s;height:100%} .waveform-bar:nth-child(4){animation-delay:0.3s;height:70%} .waveform-bar:nth-child(5){animation-delay:0.15s;height:50%}
+@keyframes wave { 0%,100%{transform:scaleY(0.4)} 50%{transform:scaleY(1)} }
+.waveform-wrap { display:none; }
+.waveform-wrap.active { display:flex; align-items:center; gap:5px; }
 
-  /* DIRECTION BAR */
-  .direction-bar { display:flex; align-items:center; justify-content:center; padding:7px 24px; border-bottom:1px solid var(--border); background:var(--header-bg); flex-shrink:0; gap:14px; }
-  .dir-label { font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); transition:color 0.3s; }
-  .dir-label.active-dir { color:var(--text); }
-  .dir-toggle-btn { font-family:'Syne',sans-serif; font-weight:800; font-size:0.9rem; background:rgba(128,128,128,0.08); border:1px solid var(--border); color:var(--text); padding:5px 16px; border-radius:30px; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; gap:8px; }
-  .dir-toggle-btn:hover { border-color:var(--accent-l); }
-  .dir-arrow { display:inline-block; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-  .dir-toggle-btn.flipped .dir-arrow { transform:rotate(180deg); }
-  .dir-mode-badge { font-size:0.57rem; padding:2px 8px; border-radius:10px; background:rgba(79,195,247,0.15); color:var(--accent-l); letter-spacing:0.1em; font-weight:700; }
-  .dir-toggle-btn.flipped .dir-mode-badge { background:rgba(255,183,77,0.15); color:#ffb74d; }
+/* ── SETTINGS BAR (Ton + Hızlı Yanıt + Sözlük kontrolleri) ── */
+.settings-bar { display:flex; align-items:center; gap:10px; padding:6px 18px; border-bottom:1px solid var(--border); background:var(--header-bg); flex-shrink:0; flex-wrap:wrap; }
+.settings-group { display:flex; align-items:center; gap:5px; }
+.settings-label { font-family:'Syne',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; white-space:nowrap; }
 
-  /* COL LABELS */
-  .col-labels { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--border); flex-shrink:0; transition:grid-template-columns 0.3s; }
-  .col-labels.right-hidden { grid-template-columns:1fr 0fr; }
-  .col-label { padding:8px 22px; font-family:'Syne',sans-serif; font-size:0.61rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; display:flex; align-items:center; gap:8px; overflow:hidden; white-space:nowrap; }
-  .col-label-l { color:var(--accent-l); border-right:1px solid var(--border); background:var(--panel-l-bg); justify-content:space-between; }
-  .col-label-r { color:var(--accent-r); background:var(--panel-r-bg); }
-  .col-tag { font-size:0.56rem; padding:2px 7px; border-radius:4px; font-weight:400; opacity:0.7; flex-shrink:0; }
-  .col-label-l .col-tag { background:rgba(79,195,247,0.15); color:var(--accent-l); }
-  .col-label-r .col-tag { background:rgba(105,240,174,0.15); color:var(--accent-r); }
+/* Ton seçici */
+.tone-select { background:var(--bg2); border:1px solid var(--border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.68rem; padding:4px 8px; border-radius:6px; outline:none; cursor:pointer; transition:border-color 0.2s; }
+.tone-select:focus { border-color:var(--accent-l); }
 
-  /* Hide right panel button in col label */
-  .hide-right-btn { font-family:'Syne',sans-serif; font-size:0.58rem; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s; white-space:nowrap; margin-left:auto; flex-shrink:0; }
-  .hide-right-btn:hover { border-color:#ef5350; color:#ef5350; }
-  .hide-right-btn.hidden-mode { border-color:var(--accent-r); color:var(--accent-r); background:rgba(105,240,174,0.08); }
+/* Hızlı yanıt butonları */
+.quick-replies { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.qr-btn { font-family:'DM Mono',monospace; font-size:0.68rem; padding:4px 10px; border-radius:20px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.qr-btn:hover { border-color:var(--accent-l); color:var(--text); background:rgba(79,195,247,0.07); }
+.qr-btn:active { transform:scale(0.96); }
 
-  /* PANELS */
-  .panels { display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden; transition:grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1); }
-  .panels.right-hidden { grid-template-columns:1fr 0fr; }
-  .panel { display:flex; flex-direction:column; overflow:hidden; }
-  .panel-l { border-right:1px solid var(--border); background:var(--panel-l-bg); }
-  .panel-r { background:var(--panel-r-bg); transition:opacity 0.3s; }
-  .panels.right-hidden .panel-r { opacity:0; pointer-events:none; }
-  .messages { flex:1; overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
-  .messages::-webkit-scrollbar{width:4px} .messages::-webkit-scrollbar-track{background:transparent} .messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+/* ── DIRECTION BAR ── */
+.direction-bar { display:flex; align-items:center; justify-content:center; padding:6px 24px; border-bottom:1px solid var(--border); background:var(--header-bg); flex-shrink:0; gap:14px; }
+.dir-label { font-family:'Syne',sans-serif; font-size:0.69rem; font-weight:700; letter-spacing:0.1em; color:var(--muted); transition:color 0.3s; }
+.dir-label.active-dir { color:var(--text); }
+.dir-toggle-btn { font-family:'Syne',sans-serif; font-weight:800; font-size:0.88rem; background:rgba(128,128,128,0.08); border:1px solid var(--border); color:var(--text); padding:5px 15px; border-radius:30px; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; gap:8px; }
+.dir-toggle-btn:hover { border-color:var(--accent-l); }
+.dir-arrow { display:inline-block; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.dir-toggle-btn.flipped .dir-arrow { transform:rotate(180deg); }
+.dir-mode-badge { font-size:0.56rem; padding:2px 8px; border-radius:10px; background:rgba(79,195,247,0.15); color:var(--accent-l); letter-spacing:0.1em; font-weight:700; }
+.dir-toggle-btn.flipped .dir-mode-badge { background:rgba(255,183,77,0.15); color:#ffb74d; }
 
-  /* CARDS */
-  .msg-card { border-radius:10px; overflow:hidden; border:1px solid var(--border); animation:slideIn 0.35s cubic-bezier(0.34,1.56,0.64,1); opacity:0; animation-fill-mode:forwards; background:var(--card-bg); }
-  @keyframes slideIn { from{opacity:0;transform:translateY(10px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-  .msg-row-top { padding:10px 14px; font-size:var(--font-size); line-height:1.6; border-bottom:1px solid var(--border); }
-  .msg-row-bot { padding:9px 14px; font-size:calc(var(--font-size) - 0.07rem); line-height:1.6; }
-  .msg-meta { padding:4px 14px; font-size:0.58rem; color:var(--muted); background:rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center; }
-  [data-theme="light"] .msg-meta { background:rgba(0,0,0,0.04); }
-  .copy-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:2px 7px; font-size:0.58rem; cursor:pointer; transition:all 0.15s; font-family:'Syne',sans-serif; }
-  .copy-btn:hover { border-color:var(--accent-r); color:var(--accent-r); }
-  .copy-btn.copied { border-color:var(--accent-r); color:var(--accent-r); }
-  .tts-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:2px 7px; font-size:0.7rem; cursor:pointer; transition:all 0.15s; }
-  .tts-btn:hover { border-color:var(--accent-l); color:var(--accent-l); }
-  .tts-btn.speaking { border-color:var(--accent-l); color:var(--accent-l); animation:pulse 0.8s infinite; }
-  .lang-badge { display:inline-block; font-size:0.56rem; padding:1px 6px; border-radius:3px; margin-right:6px; font-weight:600; letter-spacing:0.1em; vertical-align:middle; }
-  .badge-en { background:rgba(79,195,247,0.2); color:var(--accent-l); }
-  .badge-tr { background:rgba(128,203,196,0.2); color:#4db6ac; }
-  .badge-resp { background:rgba(105,240,174,0.2); color:var(--accent-r); }
-  .badge-tr-input { background:rgba(255,183,77,0.2); color:#ffb74d; }
+/* ── COL LABELS ── */
+.col-labels { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--border); flex-shrink:0; transition:grid-template-columns 0.3s; }
+.col-labels.right-hidden { grid-template-columns:1fr 0fr; }
+.col-label { padding:7px 20px; font-family:'Syne',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; display:flex; align-items:center; gap:8px; overflow:hidden; white-space:nowrap; }
+.col-label-l { color:var(--accent-l); border-right:1px solid var(--border); background:var(--panel-l-bg); }
+.col-label-r { color:var(--accent-r); background:var(--panel-r-bg); }
+.col-tag { font-size:0.55rem; padding:2px 7px; border-radius:4px; font-weight:400; opacity:0.7; flex-shrink:0; }
+.col-label-l .col-tag { background:rgba(79,195,247,0.15); color:var(--accent-l); }
+.col-label-r .col-tag { background:rgba(105,240,174,0.15); color:var(--accent-r); }
+.hide-right-btn { font-family:'Syne',sans-serif; font-size:0.57rem; font-weight:700; padding:2px 8px; border-radius:4px; border:1px solid var(--border); background:none; color:var(--muted); cursor:pointer; transition:all 0.2s; white-space:nowrap; margin-left:auto; flex-shrink:0; }
+.hide-right-btn:hover { border-color:#ef5350; color:#ef5350; }
+.hide-right-btn.hidden-mode { border-color:var(--accent-r); color:var(--accent-r); background:rgba(105,240,174,0.08); }
 
-  /* LOADING */
-  .loading-card { border-radius:10px; border:1px solid var(--border); padding:13px 16px; display:flex; align-items:center; gap:12px; animation:slideIn 0.3s ease forwards; opacity:0; background:var(--card-bg); }
-  .loading-dots { display:flex; gap:5px; }
-  .loading-dots span { width:6px; height:6px; border-radius:50%; background:var(--accent-l); animation:dot-bounce 1.2s infinite; }
-  .loading-dots span:nth-child(2){animation-delay:0.2s;background:var(--accent-r)} .loading-dots span:nth-child(3){animation-delay:0.4s}
-  @keyframes dot-bounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-6px);opacity:1} }
-  .loading-text { font-size:0.73rem; color:var(--muted); }
+/* ── MAIN LAYOUT ── */
+.main-layout { display:flex; flex:1; overflow:hidden; }
 
-  /* BOTTOM AREA — combined text input + mic bar */
-  .bottom-area { border-top:1px solid var(--border); background:var(--interim-bg); flex-shrink:0; padding:10px 16px; display:flex; flex-direction:column; gap:7px; }
+/* ── SIDE PANEL (Sözlük) ── */
+.side-panel { width:0; overflow:hidden; transition:width 0.35s cubic-bezier(0.4,0,0.2,1); background:var(--panel-side-bg); border-left:0px solid var(--border); flex-shrink:0; display:flex; flex-direction:column; }
+.side-panel.open { width:280px; border-left:1px solid var(--border); }
+.side-panel-header { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.side-panel-title { font-family:'Syne',sans-serif; font-weight:800; font-size:0.78rem; letter-spacing:0.1em; color:var(--text); }
+.side-panel-close { background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:4px; transition:color 0.2s; }
+.side-panel-close:hover { color:var(--text); }
+.side-panel-body { flex:1; overflow-y:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.glossary-add { display:flex; flex-direction:column; gap:6px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.glossary-row { display:flex; gap:5px; }
+.glossary-input { flex:1; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.72rem; padding:6px 9px; border-radius:6px; outline:none; transition:border-color 0.2s; }
+.glossary-input:focus { border-color:var(--accent-l); }
+.glossary-input::placeholder { color:var(--muted); font-style:italic; }
+.glossary-add-btn { font-family:'Syne',sans-serif; font-weight:700; font-size:0.63rem; padding:6px 10px; border-radius:6px; border:1px solid rgba(105,240,174,0.3); background:rgba(105,240,174,0.1); color:var(--accent-r); cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.glossary-add-btn:hover { background:rgba(105,240,174,0.2); }
+.glossary-list { display:flex; flex-direction:column; gap:6px; }
+.glossary-item { display:flex; align-items:center; gap:6px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--bg2); }
+.glossary-item-en { font-size:0.72rem; color:var(--accent-l); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.glossary-arrow { font-size:0.65rem; color:var(--muted); flex-shrink:0; }
+.glossary-item-tr { font-size:0.72rem; color:#4db6ac; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-align:right; }
+.glossary-del-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.75rem; padding:0 3px; transition:color 0.15s; flex-shrink:0; }
+.glossary-del-btn:hover { color:#ef5350; }
+.glossary-empty { font-size:0.72rem; color:var(--muted); text-align:center; padding:16px 0; font-style:italic; }
+.glossary-hint { font-size:0.65rem; color:var(--muted); opacity:0.7; text-align:center; line-height:1.5; }
 
-  .interim-row { display:flex; align-items:center; gap:8px; min-height:20px; font-size:0.73rem; color:var(--muted); font-style:italic; }
-  .interim-icon { width:6px; height:6px; border-radius:50%; background:var(--accent-r); flex-shrink:0; animation:pulse 1s infinite; display:none; }
+/* ── PANELS ── */
+.panels { display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden; transition:grid-template-columns 0.35s cubic-bezier(0.4,0,0.2,1); }
+.panels.right-hidden { grid-template-columns:1fr 0fr; }
+.panel { display:flex; flex-direction:column; overflow:hidden; }
+.panel-l { border-right:1px solid var(--border); background:var(--panel-l-bg); }
+.panel-r { background:var(--panel-r-bg); transition:opacity 0.3s; }
+.panels.right-hidden .panel-r { opacity:0; pointer-events:none; }
+.messages { flex:1; overflow-y:auto; padding:14px 18px; display:flex; flex-direction:column; gap:11px; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.messages::-webkit-scrollbar{width:4px} .messages::-webkit-scrollbar-track{background:transparent} .messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 
-  .text-input-row { display:flex; gap:7px; align-items:flex-end; }
-  .text-input { flex:1; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.78rem; padding:8px 12px; border-radius:8px; outline:none; resize:none; min-height:38px; max-height:100px; transition:border-color 0.2s; line-height:1.5; }
-  .text-input:focus { border-color:var(--accent-l); }
-  .text-input::placeholder { color:var(--muted); font-style:italic; }
-  .send-btn { font-family:'Syne',sans-serif; font-weight:700; font-size:0.68rem; letter-spacing:0.07em; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s; text-transform:uppercase; white-space:nowrap; background:var(--accent-l); color:#000; flex-shrink:0; align-self:flex-end; }
-  .send-btn:hover { filter:brightness(1.12); transform:translateY(-1px); }
-  .send-btn.tr-send { background:rgba(255,183,77,0.15); color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
-  .send-btn.tr-send:hover { background:rgba(255,183,77,0.25); transform:translateY(-1px); }
+/* ── CARDS ── */
+.msg-card { border-radius:10px; overflow:hidden; border:1px solid var(--border); animation:slideIn 0.35s cubic-bezier(0.34,1.56,0.64,1); opacity:0; animation-fill-mode:forwards; background:var(--card-bg); }
+@keyframes slideIn { from{opacity:0;transform:translateY(10px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.msg-row-top { padding:9px 13px; font-size:var(--font-size); line-height:1.6; border-bottom:1px solid var(--border); }
+.msg-row-bot { padding:8px 13px; font-size:calc(var(--font-size) - 0.07rem); line-height:1.6; }
+.msg-meta { padding:3px 13px; font-size:0.57rem; color:var(--muted); background:rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center; }
+[data-theme="light"] .msg-meta { background:rgba(0,0,0,0.04); }
+.copy-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:2px 7px; font-size:0.57rem; cursor:pointer; transition:all 0.15s; font-family:'Syne',sans-serif; }
+.copy-btn:hover { border-color:var(--accent-r); color:var(--accent-r); }
+.copy-btn.copied { border-color:var(--accent-r); color:var(--accent-r); }
+.tts-btn { background:none; border:1px solid var(--border); color:var(--muted); border-radius:4px; padding:2px 7px; font-size:0.68rem; cursor:pointer; transition:all 0.15s; }
+.tts-btn:hover { border-color:var(--accent-l); color:var(--accent-l); }
+.tts-btn.speaking { border-color:var(--accent-l); color:var(--accent-l); animation:pulse 0.8s infinite; }
+.lang-badge { display:inline-block; font-size:0.55rem; padding:1px 6px; border-radius:3px; margin-right:6px; font-weight:600; letter-spacing:0.1em; vertical-align:middle; }
+.badge-en { background:rgba(79,195,247,0.2); color:var(--accent-l); }
+.badge-tr { background:rgba(128,203,196,0.2); color:#4db6ac; }
+.badge-resp { background:rgba(105,240,174,0.2); color:var(--accent-r); }
+.badge-tr-input { background:rgba(255,183,77,0.2); color:#ffb74d; }
 
-  /* TR speak bar (right panel) */
-  .tr-speak-bar { border-top:1px solid var(--border); background:var(--interim-bg); flex-shrink:0; padding:8px 13px; display:flex; flex-direction:column; gap:5px; }
-  .tr-interim { font-size:0.7rem; color:#ffb74d; min-height:14px; font-style:italic; opacity:0.85; }
-  .btn-tr-speak { font-family:'Syne',sans-serif; font-weight:700; font-size:0.69rem; letter-spacing:0.06em; text-transform:uppercase; padding:8px 14px; border-radius:8px; border:1px solid rgba(255,183,77,0.3); cursor:pointer; width:100%; background:rgba(255,183,77,0.08); color:#ffb74d; transition:all 0.2s; }
-  .btn-tr-speak:hover { background:rgba(255,183,77,0.18); }
-  .btn-tr-speak.active { background:rgba(255,183,77,0.2); color:#ffe082; border-color:rgba(255,183,77,0.55); animation:tr-pulse 1.5s infinite; }
-  @keyframes tr-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,183,77,0.3)} 50%{box-shadow:0 0 0 5px rgba(255,183,77,0)} }
+/* ── LOADING ── */
+.loading-card { border-radius:10px; border:1px solid var(--border); padding:12px 15px; display:flex; align-items:center; gap:12px; animation:slideIn 0.3s ease forwards; opacity:0; background:var(--card-bg); }
+.loading-dots { display:flex; gap:5px; }
+.loading-dots span { width:6px; height:6px; border-radius:50%; background:var(--accent-l); animation:dot-bounce 1.2s infinite; }
+.loading-dots span:nth-child(2){animation-delay:0.2s;background:var(--accent-r)} .loading-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dot-bounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-6px);opacity:1} }
+.loading-text { font-size:0.72rem; color:var(--muted); }
 
-  /* EMPTY */
-  .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--muted); font-size:0.78rem; text-align:center; padding:24px; }
-  .empty-icon { font-size:1.8rem; opacity:0.3; }
-  .empty-hint { font-size:0.67rem; opacity:0.6; max-width:220px; line-height:1.6; }
+/* ── BOTTOM BARS ── */
+.bottom-area { border-top:1px solid var(--border); background:var(--interim-bg); flex-shrink:0; padding:9px 14px; display:flex; flex-direction:column; gap:6px; }
+.interim-row { display:flex; align-items:center; gap:8px; min-height:18px; font-size:0.72rem; color:var(--muted); font-style:italic; }
+.interim-icon { width:6px; height:6px; border-radius:50%; background:var(--accent-r); flex-shrink:0; animation:pulse 1s infinite; display:none; }
+.text-input-row { display:flex; gap:6px; align-items:flex-end; }
+.text-input { flex:1; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); font-family:'DM Mono',monospace; font-size:0.77rem; padding:7px 11px; border-radius:8px; outline:none; resize:none; min-height:36px; max-height:96px; transition:border-color 0.2s; line-height:1.5; }
+.text-input:focus { border-color:var(--accent-l); }
+.text-input::placeholder { color:var(--muted); font-style:italic; }
+.send-btn { font-family:'Syne',sans-serif; font-weight:700; font-size:0.66rem; letter-spacing:0.07em; padding:7px 13px; border-radius:8px; border:none; cursor:pointer; transition:all 0.2s; text-transform:uppercase; white-space:nowrap; background:var(--accent-l); color:#000; flex-shrink:0; align-self:flex-end; }
+.send-btn:hover { filter:brightness(1.12); transform:translateY(-1px); }
+.send-btn.tr-send { background:rgba(255,183,77,0.15); color:#ffb74d; border:1px solid rgba(255,183,77,0.3); }
+.send-btn.tr-send:hover { background:rgba(255,183,77,0.25); transform:translateY(-1px); }
+.tr-speak-bar { border-top:1px solid var(--border); background:var(--interim-bg); flex-shrink:0; padding:7px 12px; display:flex; flex-direction:column; gap:4px; }
+.tr-interim { font-size:0.69rem; color:#ffb74d; min-height:13px; font-style:italic; opacity:0.85; }
+.btn-tr-speak { font-family:'Syne',sans-serif; font-weight:700; font-size:0.67rem; letter-spacing:0.06em; text-transform:uppercase; padding:7px 13px; border-radius:8px; border:1px solid rgba(255,183,77,0.3); cursor:pointer; width:100%; background:rgba(255,183,77,0.08); color:#ffb74d; transition:all 0.2s; }
+.btn-tr-speak:hover { background:rgba(255,183,77,0.18); }
+.btn-tr-speak.active { background:rgba(255,183,77,0.2); color:#ffe082; border-color:rgba(255,183,77,0.55); animation:tr-pulse 1.5s infinite; }
+@keyframes tr-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,183,77,0.3)} 50%{box-shadow:0 0 0 5px rgba(255,183,77,0)} }
 
-  /* TOAST */
-  .history-toast { position:fixed; bottom:20px; right:20px; background:var(--accent-r); color:#000; font-family:'Syne',sans-serif; font-size:0.7rem; font-weight:700; padding:8px 14px; border-radius:8px; opacity:0; transform:translateY(10px); transition:all 0.3s; pointer-events:none; z-index:100; }
-  .history-toast.show { opacity:1; transform:translateY(0); }
+/* ── EMPTY ── */
+.empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--muted); font-size:0.77rem; text-align:center; padding:24px; }
+.empty-icon { font-size:1.7rem; opacity:0.3; }
+.empty-hint { font-size:0.65rem; opacity:0.6; max-width:220px; line-height:1.6; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:20px; right:20px; background:var(--accent-r); color:#000; font-family:'Syne',sans-serif; font-size:0.69rem; font-weight:700; padding:8px 14px; border-radius:8px; opacity:0; transform:translateY(10px); transition:all 0.3s; pointer-events:none; z-index:200; }
+.toast.show { opacity:1; transform:translateY(0); }
 </style>
 </head>
 <body>
 
+<!-- ── HEADER ── -->
 <header>
   <div class="logo">
     <div class="logo-dot"></div>
@@ -194,7 +235,8 @@
       </div>
     </div>
     <div class="toolbar-group">
-      <button class="icon-btn" id="filterBtn" onclick="toggleFilter()" title="Dolgu kelime filtresi">🔇 Filtre</button>
+      <button class="icon-btn" id="filterBtn" onclick="toggleFilter()" title="Dolgu kelime filtresi (um, uh...)">🔇 Filtre</button>
+      <button class="icon-btn" id="glossaryBtn" onclick="toggleGlossary()" title="Sözlük / Terim Listesi">📚 Sözlük</button>
       <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
     </div>
     <span class="status-pill" id="statusPill">HAZIR</span>
@@ -212,6 +254,29 @@
   </div>
 </header>
 
+<!-- ── SETTINGS BAR ── -->
+<div class="settings-bar">
+  <!-- Ton seçimi -->
+  <div class="settings-group">
+    <span class="settings-label">🎭 Ton</span>
+    <select class="tone-select" id="toneSelect" onchange="saveTone()">
+      <option value="professional">Profesyonel</option>
+      <option value="friendly">Samimi</option>
+      <option value="formal">Resmi / Kurumsal</option>
+      <option value="technical">Teknik</option>
+      <option value="sales">Satış Odaklı</option>
+    </select>
+  </div>
+  <!-- Hızlı yanıtlar -->
+  <div class="settings-group" style="flex:1;">
+    <span class="settings-label">⚡ Hızlı</span>
+    <div class="quick-replies" id="quickReplies">
+      <!-- JS ile doldurulur -->
+    </div>
+  </div>
+</div>
+
+<!-- ── DIRECTION BAR ── -->
 <div class="direction-bar">
   <span class="dir-label active-dir" id="dirLabelLeft">🇬🇧 İngilizce</span>
   <button class="dir-toggle-btn" id="dirBtn" onclick="toggleDirection()">
@@ -223,113 +288,235 @@
 
 <div class="col-labels" id="colLabels">
   <div class="col-label col-label-l">
-    <span>🎤 <span id="colLabelLText">Konuşma (İngilizce)</span></span>
-    <span style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-      <span class="col-tag" id="colTagL">Dinleniyor → Çevriliyor</span>
-    </span>
+    🎤 <span id="colLabelLText">Konuşma (İngilizce)</span>
+    <span class="col-tag" id="colTagL">Dinleniyor → Çevriliyor</span>
   </div>
   <div class="col-label col-label-r" id="colLabelR">
     💡 <span id="colLabelRText">Yanıt Önerisi</span>
     <span class="col-tag" id="colTagR">AI Yanıt</span>
-    <button class="hide-right-btn" id="hideRightBtn" onclick="toggleRightPanel()" title="Yanıt panelini gizle/göster">✕ Gizle</button>
+    <button class="hide-right-btn" id="hideRightBtn" onclick="toggleRightPanel()">✕ Gizle</button>
   </div>
 </div>
 
-<div class="panels" id="mainPanels">
-  <!-- LEFT PANEL -->
-  <div class="panel panel-l">
-    <div class="messages" id="leftMessages">
-      <div class="empty-state" id="leftEmpty">
-        <div class="empty-icon">🎙️</div>
-        <div id="leftEmptyText">Ses veya yazı bekleniyor...</div>
-        <div class="empty-hint" id="leftEmptyHint">Başlat düğmesine bas ve konuş, ya da aşağıya yazarak çevir</div>
+<!-- ── MAIN LAYOUT ── -->
+<div class="main-layout">
+  <div class="panels" id="mainPanels">
+    <!-- LEFT -->
+    <div class="panel panel-l">
+      <div class="messages" id="leftMessages">
+        <div class="empty-state" id="leftEmpty">
+          <div class="empty-icon">🎙️</div>
+          <div id="leftEmptyText">Ses veya yazı bekleniyor...</div>
+          <div class="empty-hint" id="leftEmptyHint">Başlat'a bas ve konuş, ya da aşağıya yazarak çevir</div>
+        </div>
+      </div>
+      <div class="bottom-area">
+        <div class="interim-row">
+          <div class="interim-icon" id="interimDot"></div>
+          <span id="interimText">Dinleme başlatılmadı</span>
+        </div>
+        <div class="text-input-row">
+          <textarea class="text-input" id="leftTextInput" placeholder="İngilizce yazın, Enter ile çevir..." rows="1"
+            onkeydown="handleTextKey(event,'left')"></textarea>
+          <button class="send-btn" onclick="submitTextLeft()">⏎ Çevir</button>
+        </div>
       </div>
     </div>
-    <!-- LEFT BOTTOM: mic status + text input -->
-    <div class="bottom-area">
-      <div class="interim-row">
-        <div class="interim-icon" id="interimDot"></div>
-        <span id="interimText">Dinleme başlatılmadı</span>
+
+    <!-- RIGHT -->
+    <div class="panel panel-r" id="rightPanel">
+      <div class="messages" id="rightMessages">
+        <div class="empty-state" id="rightEmpty">
+          <div class="empty-icon">💬</div>
+          <div>Yanıt bekleniyor...</div>
+          <div class="empty-hint">Konuşma algılandığında AI yanıt önerisi burada görünür</div>
+        </div>
       </div>
-      <div class="text-input-row">
-        <textarea class="text-input" id="leftTextInput" placeholder="Buraya yazın ve Çevir'e basın..." rows="1"
-          onkeydown="handleTextKey(event,'left')"></textarea>
-        <button class="send-btn" onclick="submitTextLeft()">⏎ Çevir</button>
+      <div class="tr-speak-bar" id="trSpeakBar">
+        <div class="tr-interim" id="trInterim"></div>
+        <button class="btn-tr-speak" id="trSpeakBtn" onclick="toggleTrSpeak()">🇹🇷 Türkçe Konuş → İngilizceye Çevir</button>
+      </div>
+      <div class="bottom-area">
+        <div class="text-input-row">
+          <textarea class="text-input" id="rightTextInput" placeholder="Türkçe yazın, Enter ile çevir..." rows="1"
+            onkeydown="handleTextKey(event,'right')"></textarea>
+          <button class="send-btn tr-send" onclick="submitTextRight()">⏎ Çevir</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
-  <div class="panel panel-r" id="rightPanel">
-    <div class="messages" id="rightMessages">
-      <div class="empty-state" id="rightEmpty">
-        <div class="empty-icon">💬</div>
-        <div>Yanıt bekleniyor...</div>
-        <div class="empty-hint">Konuşma algılandığında burada görünür</div>
+  <!-- SIDE PANEL: Sözlük -->
+  <div class="side-panel" id="sidePanel">
+    <div class="side-panel-header">
+      <span class="side-panel-title">📚 Sözlük</span>
+      <button class="side-panel-close" onclick="toggleGlossary()">✕</button>
+    </div>
+    <div class="side-panel-body">
+      <div class="glossary-add">
+        <p class="glossary-hint">Sık kullandığın terimleri ekle. AI çevirilerde bunları öncelikli kullanır.</p>
+        <div class="glossary-row">
+          <input class="glossary-input" id="glossaryEN" placeholder="İngilizce terim...">
+        </div>
+        <div class="glossary-row">
+          <input class="glossary-input" id="glossaryTR" placeholder="Türkçe karşılığı...">
+          <button class="glossary-add-btn" onclick="addGlossaryItem()">+ Ekle</button>
+        </div>
       </div>
-    </div>
-    <!-- RIGHT BOTTOM: TR speak + text input -->
-    <div class="tr-speak-bar" id="trSpeakBar">
-      <div class="tr-interim" id="trInterim"></div>
-      <button class="btn-tr-speak" id="trSpeakBtn" onclick="toggleTrSpeak()">🇹🇷 Türkçe Konuş → İngilizceye Çevir</button>
-    </div>
-    <div class="bottom-area" style="border-top:1px solid var(--border);">
-      <div class="text-input-row">
-        <textarea class="text-input" id="rightTextInput" placeholder="Buraya yazın ve çevir..." rows="1"
-          onkeydown="handleTextKey(event,'right')"></textarea>
-        <button class="send-btn tr-send" onclick="submitTextRight()">⏎ Çevir</button>
+      <div class="glossary-list" id="glossaryList">
+        <p class="glossary-empty" id="glossaryEmpty">Henüz terim eklenmedi</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="history-toast" id="historyToast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 // ── STATE ──
-let recognition = null, isListening = false;
-let trRecognition = null, isTrListening = false;
-let processingQueue = [], isProcessing = false;
-let currentMode = 'en-tr';
-let filterEnabled = false;
-let currentTheme = 'dark';
-let fontSize = 0.88;
-let rightPanelVisible = true;
+let recognition=null, isListening=false;
+let trRecognition=null, isTrListening=false;
+let processingQueue=[], isProcessing=false;
+let currentMode='en-tr';
+let filterEnabled=false;
+let currentTheme='dark';
+let fontSize=0.88;
+let rightPanelVisible=true;
+let glossaryPanelOpen=false;
+let glossary=[]; // [{en, tr}]
 
-const STORAGE_KEY = 'groq_api_key_v1';
-const HISTORY_KEY = 'translator_history_v1';
-const SETTINGS_KEY = 'translator_settings_v2';
-const FILLER_WORDS = /\b(um+|uh+|er+|ah+|like|you know|i mean|basically|literally|actually|so|well|right)\b/gi;
+const STORAGE_KEY='groq_api_key_v1';
+const HISTORY_KEY='translator_history_v2';
+const SETTINGS_KEY='translator_settings_v3';
+const GLOSSARY_KEY='translator_glossary_v1';
+const FILLER_WORDS=/\b(um+|uh+|er+|ah+|like|you know|i mean|basically|literally|actually|so|well|right)\b/gi;
+
+// Hızlı yanıt seti (EN→TR ve TR→EN modlar için)
+const QUICK_REPLIES = {
+  'en-tr': [
+    { label:'Anladım', text:'I understand.' },
+    { label:'Bir dakika', text:'Give me a moment please.' },
+    { label:'Tekrar eder misiniz?', text:'Could you repeat that?' },
+    { label:'Harika!', text:'That sounds great!' },
+    { label:'Katılıyorum', text:'I agree with that.' },
+    { label:'Devam edelim', text:'Let\'s move forward.' },
+  ],
+  'tr-en': [
+    { label:'I understand', text:'Anladım.' },
+    { label:'One moment', text:'Bir dakika lütfen.' },
+    { label:'Could you repeat?', text:'Tekrar eder misiniz?' },
+    { label:'Sounds good!', text:'Kulağa harika geliyor!' },
+    { label:'I agree', text:'Katılıyorum.' },
+    { label:'Let\'s proceed', text:'Devam edelim.' },
+  ]
+};
+
+// Ton → sistem prompt metni
+const TONE_PROMPTS = {
+  professional: 'Use a professional, clear and concise tone.',
+  friendly: 'Use a warm, friendly and approachable tone.',
+  formal: 'Use a formal, corporate tone with polished language.',
+  technical: 'Use precise technical language appropriate for IT or engineering discussions.',
+  sales: 'Use a persuasive, positive and solution-focused sales tone.',
+};
 
 // ── ON LOAD ──
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem(STORAGE_KEY);
+  const saved=localStorage.getItem(STORAGE_KEY);
   if (saved) {
-    document.getElementById('apiKey').value = saved;
-    document.getElementById('apiKey').disabled = true;
-    document.getElementById('saveKeyBtn').style.display = 'none';
-    document.getElementById('delKeyBtn').style.display = 'inline-block';
-    setStatus('ANAHTAR KAYITLI', 'saved');
+    document.getElementById('apiKey').value=saved;
+    document.getElementById('apiKey').disabled=true;
+    document.getElementById('saveKeyBtn').style.display='none';
+    document.getElementById('delKeyBtn').style.display='inline-block';
+    setStatus('ANAHTAR KAYITLI','saved');
   }
-  const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-  if (settings.theme) { currentTheme = settings.theme; applyTheme(); }
-  if (settings.fontSize) { fontSize = settings.fontSize; document.documentElement.style.setProperty('--font-size', fontSize + 'rem'); }
-  if (settings.filter) { filterEnabled = settings.filter; updateFilterBtn(); }
-  if (settings.rightHidden) { rightPanelVisible = false; applyRightPanelState(); }
+  const settings=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}');
+  if (settings.theme) { currentTheme=settings.theme; applyTheme(); }
+  if (settings.fontSize) { fontSize=settings.fontSize; document.documentElement.style.setProperty('--font-size',fontSize+'rem'); }
+  if (settings.filter) { filterEnabled=settings.filter; updateFilterBtn(); }
+  if (settings.rightHidden) { rightPanelVisible=false; applyRightPanelState(); }
+  if (settings.tone) document.getElementById('toneSelect').value=settings.tone;
+
+  glossary=JSON.parse(localStorage.getItem(GLOSSARY_KEY)||'[]');
+  renderGlossary();
+  renderQuickReplies();
   restoreHistory();
-  // Auto-resize textareas
-  ['leftTextInput','rightTextInput'].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', () => { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; });
+
+  ['leftTextInput','rightTextInput'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.addEventListener('input',()=>{ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,96)+'px'; });
   });
+
+  // Glossary Enter key
+  document.getElementById('glossaryTR').addEventListener('keydown', e=>{ if(e.key==='Enter') addGlossaryItem(); });
+  document.getElementById('glossaryEN').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('glossaryTR').focus(); });
 });
 
 function saveSettings() {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ theme:currentTheme, fontSize, filter:filterEnabled, rightHidden:!rightPanelVisible }));
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify({ theme:currentTheme, fontSize, filter:filterEnabled, rightHidden:!rightPanelVisible, tone:document.getElementById('toneSelect').value }));
+}
+function saveTone() { saveSettings(); }
+
+// ── QUICK REPLIES ──
+function renderQuickReplies() {
+  const c=document.getElementById('quickReplies');
+  const replies=QUICK_REPLIES[currentMode]||[];
+  c.innerHTML=replies.map((r,i)=>`<button class="qr-btn" onclick="useQuickReply(${i})" title="${escHtml(r.text)}">${escHtml(r.label)}</button>`).join('');
+}
+function useQuickReply(idx) {
+  const r=QUICK_REPLIES[currentMode][idx];
+  if (!r) return;
+  if (!getApiKey()) { alert('Lütfen önce API anahtarını kaydedin!'); return; }
+  // Hızlı yanıtı sol panele yaz ve çevir
+  if (currentMode==='en-tr') processEN(r.text);
+  else processTR(r.text);
+}
+
+// ── GLOSSARY ──
+function toggleGlossary() {
+  glossaryPanelOpen=!glossaryPanelOpen;
+  document.getElementById('sidePanel').classList.toggle('open',glossaryPanelOpen);
+  document.getElementById('glossaryBtn').classList.toggle('panel-active',glossaryPanelOpen);
+}
+function addGlossaryItem() {
+  const enEl=document.getElementById('glossaryEN');
+  const trEl=document.getElementById('glossaryTR');
+  const en=enEl.value.trim(), tr=trEl.value.trim();
+  if (!en||!tr) { showToast('Her iki alanı da doldurun!'); return; }
+  if (glossary.some(g=>g.en.toLowerCase()===en.toLowerCase())) { showToast('Bu terim zaten mevcut!'); return; }
+  glossary.push({en,tr});
+  localStorage.setItem(GLOSSARY_KEY,JSON.stringify(glossary));
+  enEl.value=''; trEl.value=''; enEl.focus();
+  renderGlossary();
+  showToast('✓ Terim eklendi');
+}
+function deleteGlossaryItem(idx) {
+  glossary.splice(idx,1);
+  localStorage.setItem(GLOSSARY_KEY,JSON.stringify(glossary));
+  renderGlossary();
+}
+function renderGlossary() {
+  const list=document.getElementById('glossaryList');
+  const empty=document.getElementById('glossaryEmpty');
+  if (glossary.length===0) {
+    list.innerHTML='<p class="glossary-empty" id="glossaryEmpty">Henüz terim eklenmedi</p>';
+    return;
+  }
+  list.innerHTML=glossary.map((g,i)=>`
+    <div class="glossary-item">
+      <span class="glossary-item-en">${escHtml(g.en)}</span>
+      <span class="glossary-arrow">→</span>
+      <span class="glossary-item-tr">${escHtml(g.tr)}</span>
+      <button class="glossary-del-btn" onclick="deleteGlossaryItem(${i})" title="Sil">✕</button>
+    </div>`).join('');
+}
+function buildGlossaryContext() {
+  if (glossary.length===0) return '';
+  return '\n\nGlossary (use these exact translations):\n'+glossary.map(g=>`${g.en} = ${g.tr}`).join('\n');
 }
 
 // ── THEME ──
-function toggleTheme() { currentTheme = currentTheme==='dark'?'light':'dark'; applyTheme(); saveSettings(); }
+function toggleTheme() { currentTheme=currentTheme==='dark'?'light':'dark'; applyTheme(); saveSettings(); }
 function applyTheme() { document.documentElement.setAttribute('data-theme',currentTheme); document.getElementById('themeBtn').textContent=currentTheme==='dark'?'☀️':'🌙'; }
 
 // ── FONT SIZE ──
@@ -337,120 +524,88 @@ function changeFontSize(dir) { fontSize=Math.max(0.72,Math.min(1.2,fontSize+dir*
 
 // ── FILLER FILTER ──
 function toggleFilter() { filterEnabled=!filterEnabled; updateFilterBtn(); saveSettings(); }
-function updateFilterBtn() { const b=document.getElementById('filterBtn'); b.classList.toggle('active-filter',filterEnabled); }
+function updateFilterBtn() { document.getElementById('filterBtn').classList.toggle('active-filter',filterEnabled); }
 function applyFilter(text) { if(!filterEnabled)return text; return text.replace(FILLER_WORDS,'').replace(/\s+/g,' ').trim(); }
 
-// ── RIGHT PANEL TOGGLE ──
-function toggleRightPanel() {
-  rightPanelVisible = !rightPanelVisible;
-  applyRightPanelState();
-  saveSettings();
-}
+// ── RIGHT PANEL ──
+function toggleRightPanel() { rightPanelVisible=!rightPanelVisible; applyRightPanelState(); saveSettings(); }
 function applyRightPanelState() {
-  const panels = document.getElementById('mainPanels');
-  const colLabels = document.getElementById('colLabels');
-  const btn = document.getElementById('hideRightBtn');
-  const colR = document.getElementById('colLabelR');
-  if (rightPanelVisible) {
-    panels.classList.remove('right-hidden');
-    colLabels.classList.remove('right-hidden');
-    btn.textContent = '✕ Gizle';
-    btn.classList.remove('hidden-mode');
-    colR.style.overflow = '';
-  } else {
-    panels.classList.add('right-hidden');
-    colLabels.classList.add('right-hidden');
-    btn.textContent = '↗ Göster';
-    btn.classList.add('hidden-mode');
-  }
+  const panels=document.getElementById('mainPanels');
+  const colLabels=document.getElementById('colLabels');
+  const btn=document.getElementById('hideRightBtn');
+  if (rightPanelVisible) { panels.classList.remove('right-hidden'); colLabels.classList.remove('right-hidden'); btn.textContent='✕ Gizle'; btn.classList.remove('hidden-mode'); }
+  else { panels.classList.add('right-hidden'); colLabels.classList.add('right-hidden'); btn.textContent='↗ Göster'; btn.classList.add('hidden-mode'); }
 }
 
-// ── TEXT INPUT HANDLERS ──
-function handleTextKey(e, side) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    if (side === 'left') submitTextLeft(); else submitTextRight();
-  }
-}
-
+// ── TEXT INPUT ──
+function handleTextKey(e,side) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(side==='left')submitTextLeft();else submitTextRight();} }
 async function submitTextLeft() {
-  const input = document.getElementById('leftTextInput');
-  const text = input.value.trim();
-  if (!text) return;
-  if (!getApiKey()) { alert('Lütfen önce API anahtarını kaydedin!'); return; }
-  input.value = ''; input.style.height = 'auto';
-  if (currentMode === 'en-tr') await processEN(text);
-  else await processTR(text);
+  const input=document.getElementById('leftTextInput');
+  const text=input.value.trim(); if(!text)return;
+  if(!getApiKey()){alert('Lütfen önce API anahtarını kaydedin!');return;}
+  input.value=''; input.style.height='auto';
+  if(currentMode==='en-tr')await processEN(text); else await processTR(text);
 }
-
 async function submitTextRight() {
-  const input = document.getElementById('rightTextInput');
-  const text = input.value.trim();
-  if (!text) return;
-  if (!getApiKey()) { alert('Lütfen önce API anahtarını kaydedin!'); return; }
-  input.value = ''; input.style.height = 'auto';
-  // Right panel text input always translates opposite direction
-  if (currentMode === 'en-tr') {
-    // Right panel: TR → EN
-    await processTurkishBtn(text);
-  } else {
-    // Right panel: EN → TR suggestion
-    await processEN(text);
-  }
+  const input=document.getElementById('rightTextInput');
+  const text=input.value.trim(); if(!text)return;
+  if(!getApiKey()){alert('Lütfen önce API anahtarını kaydedin!');return;}
+  input.value=''; input.style.height='auto';
+  if(currentMode==='en-tr')await processTurkishBtn(text); else await processEN(text);
 }
 
 // ── API KEY ──
 function saveApiKey() {
-  const key = document.getElementById('apiKey').value.trim();
-  if (!key) { alert('Lütfen bir API anahtarı girin!'); return; }
-  localStorage.setItem(STORAGE_KEY, key);
-  document.getElementById('apiKey').disabled = true;
-  document.getElementById('saveKeyBtn').style.display = 'none';
-  document.getElementById('delKeyBtn').style.display = 'inline-block';
-  setStatus('ANAHTAR KAYITLI', 'saved');
+  const key=document.getElementById('apiKey').value.trim();
+  if(!key){alert('Lütfen bir API anahtarı girin!');return;}
+  localStorage.setItem(STORAGE_KEY,key);
+  document.getElementById('apiKey').disabled=true;
+  document.getElementById('saveKeyBtn').style.display='none';
+  document.getElementById('delKeyBtn').style.display='inline-block';
+  setStatus('ANAHTAR KAYITLI','saved');
 }
 function deleteApiKey() {
-  if (!confirm('API anahtarı silinsin mi?')) return;
+  if(!confirm('API anahtarı silinsin mi?'))return;
   localStorage.removeItem(STORAGE_KEY);
-  document.getElementById('apiKey').value = '';
-  document.getElementById('apiKey').disabled = false;
-  document.getElementById('saveKeyBtn').style.display = 'inline-block';
-  document.getElementById('delKeyBtn').style.display = 'none';
-  setStatus('ANAHTAR SİLİNDİ', '');
+  document.getElementById('apiKey').value='';
+  document.getElementById('apiKey').disabled=false;
+  document.getElementById('saveKeyBtn').style.display='inline-block';
+  document.getElementById('delKeyBtn').style.display='none';
+  setStatus('ANAHTAR SİLİNDİ','');
 }
-function getApiKey() { return localStorage.getItem(STORAGE_KEY)||document.getElementById('apiKey').value.trim(); }
+function getApiKey(){return localStorage.getItem(STORAGE_KEY)||document.getElementById('apiKey').value.trim();}
 
 // ── DIRECTION ──
 function toggleDirection() {
-  if (isListening) { isListening=false; try{recognition.stop()}catch(e){} recognition=null; document.getElementById('startBtn').textContent='▶ BAŞLAT'; document.getElementById('startBtn').classList.remove('active'); document.getElementById('waveformWrap').classList.remove('active'); }
-  if (isTrListening) { isTrListening=false; try{trRecognition.stop()}catch(e){} trRecognition=null; }
-  currentMode = currentMode==='en-tr'?'tr-en':'en-tr';
-  updateDirectionUI(); clearAll();
+  if(isListening){isListening=false;try{recognition.stop()}catch(e){}recognition=null;document.getElementById('startBtn').textContent='▶ BAŞLAT';document.getElementById('startBtn').classList.remove('active');document.getElementById('waveformWrap').classList.remove('active');}
+  if(isTrListening){isTrListening=false;try{trRecognition.stop()}catch(e){}trRecognition=null;}
+  currentMode=currentMode==='en-tr'?'tr-en':'en-tr';
+  updateDirectionUI(); renderQuickReplies(); clearAll();
 }
 function updateDirectionUI() {
-  const btn=document.getElementById('dirBtn'), badge=document.getElementById('dirBadge');
-  const ll=document.getElementById('dirLabelLeft'), lr=document.getElementById('dirLabelRight');
-  if (currentMode==='en-tr') {
-    btn.classList.remove('flipped'); badge.textContent='EN → TR';
-    ll.textContent='🇬🇧 İngilizce'; ll.classList.add('active-dir');
-    lr.textContent='🇹🇷 Türkçe'; lr.classList.remove('active-dir');
+  const btn=document.getElementById('dirBtn'),badge=document.getElementById('dirBadge');
+  const ll=document.getElementById('dirLabelLeft'),lr=document.getElementById('dirLabelRight');
+  if(currentMode==='en-tr'){
+    btn.classList.remove('flipped');badge.textContent='EN → TR';
+    ll.textContent='🇬🇧 İngilizce';ll.classList.add('active-dir');
+    lr.textContent='🇹🇷 Türkçe';lr.classList.remove('active-dir');
     document.getElementById('colLabelLText').textContent='Konuşma (İngilizce)';
     document.getElementById('colTagL').textContent='Dinleniyor → Çevriliyor';
     document.getElementById('colLabelRText').textContent='Yanıt Önerisi';
     document.getElementById('colTagR').textContent='AI Yanıt';
     document.getElementById('trSpeakBar').style.display='flex';
-    document.getElementById('leftTextInput').placeholder='İngilizce yazın, Çevir\'e basın...';
+    document.getElementById('leftTextInput').placeholder='İngilizce yazın, Enter ile çevir...';
     document.getElementById('rightTextInput').placeholder='Türkçe yazın, İngilizceye çevir...';
   } else {
-    btn.classList.add('flipped'); badge.textContent='TR → EN';
-    ll.textContent='🇹🇷 Türkçe'; ll.classList.add('active-dir');
-    lr.textContent='🇬🇧 İngilizce'; lr.classList.remove('active-dir');
+    btn.classList.add('flipped');badge.textContent='TR → EN';
+    ll.textContent='🇹🇷 Türkçe';ll.classList.add('active-dir');
+    lr.textContent='🇬🇧 İngilizce';lr.classList.remove('active-dir');
     document.getElementById('colLabelLText').textContent='Konuşma (Türkçe)';
     document.getElementById('colTagL').textContent='Dinleniyor → Çevriliyor';
     document.getElementById('colLabelRText').textContent='Yanıt Önerisi (EN)';
     document.getElementById('colTagR').textContent='AI İngilizce Yanıt';
     document.getElementById('trSpeakBar').style.display='none';
-    document.getElementById('leftTextInput').placeholder='Türkçe yazın, Çevir\'e basın...';
+    document.getElementById('leftTextInput').placeholder='Türkçe yazın, Enter ile çevir...';
     document.getElementById('rightTextInput').placeholder='İngilizce yazın, Türkçeye çevir...';
   }
 }
@@ -458,88 +613,88 @@ function updateDirectionUI() {
 // ── RECOGNITION ──
 function setupRecognition() {
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if (!SR) { alert('Chrome kullanın — Web Speech API gerekli.'); return false; }
+  if(!SR){alert('Chrome kullanın — Web Speech API gerekli.');return false;}
   recognition=new SR(); recognition.lang=currentMode==='en-tr'?'en-US':'tr-TR';
   recognition.continuous=true; recognition.interimResults=true;
-  recognition.onstart=()=>{ setStatus('DİNLİYOR','listening'); document.getElementById('interimDot').style.display='block'; document.getElementById('interimText').textContent=currentMode==='en-tr'?'İngilizce bekliyorum...':'Türkçe bekliyorum...'; document.getElementById('waveformWrap').classList.add('active'); };
-  recognition.onresult=(e)=>{ let interim=''; for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal){const c=applyFilter(t.trim());if(c.length>2){processingQueue.push(c);processNext();}interim='';}else{interim+=t;}} if(interim)document.getElementById('interimText').textContent='▸ '+interim; };
+  recognition.onstart=()=>{setStatus('DİNLİYOR','listening');document.getElementById('interimDot').style.display='block';document.getElementById('interimText').textContent=currentMode==='en-tr'?'İngilizce bekliyorum...':'Türkçe bekliyorum...';document.getElementById('waveformWrap').classList.add('active');};
+  recognition.onresult=(e)=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal){const c=applyFilter(t.trim());if(c.length>2){processingQueue.push(c);processNext();}interim='';}else{interim+=t;}}if(interim)document.getElementById('interimText').textContent='▸ '+interim;};
   recognition.onerror=(e)=>{if(e.error==='no-speech'||e.error==='aborted')return;setStatus('HATA: '+e.error,'error');};
   recognition.onend=()=>{if(isListening){setTimeout(()=>{try{recognition.start()}catch(e){}},200);}else{setStatus('DURDURULDU','');document.getElementById('waveformWrap').classList.remove('active');document.getElementById('interimDot').style.display='none';document.getElementById('interimText').textContent='Dinleme durduruldu';}};
   return true;
 }
 function toggleListening() {
-  if (!getApiKey()) { alert('Lütfen önce API anahtarını girin ve kaydedin!'); return; }
+  if(!getApiKey()){alert('Lütfen önce API anahtarını girin ve kaydedin!');return;}
   const btn=document.getElementById('startBtn');
-  if (!isListening) { recognition=null; if(!setupRecognition())return; isListening=true; btn.textContent='⏹ DURDUR'; btn.classList.add('active'); try{recognition.start()}catch(e){} }
-  else { isListening=false; btn.textContent='▶ BAŞLAT'; btn.classList.remove('active'); try{recognition.stop()}catch(e){} }
+  if(!isListening){recognition=null;if(!setupRecognition())return;isListening=true;btn.textContent='⏹ DURDUR';btn.classList.add('active');try{recognition.start()}catch(e){}}
+  else{isListening=false;btn.textContent='▶ BAŞLAT';btn.classList.remove('active');try{recognition.stop()}catch(e){}}
 }
 
-// ── TR VOICE BUTTON ──
+// ── TR VOICE ──
 function setupTrRecognition() {
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR)return false;
-  trRecognition=new SR(); trRecognition.lang='tr-TR'; trRecognition.continuous=false; trRecognition.interimResults=true;
+  trRecognition=new SR();trRecognition.lang='tr-TR';trRecognition.continuous=false;trRecognition.interimResults=true;
   trRecognition.onresult=(e)=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal){const c=t.trim();if(c.length>1){document.getElementById('trInterim').textContent='';processTurkishBtn(c);}}else{interim+=t;}}if(interim)document.getElementById('trInterim').textContent='▸ '+interim;};
   trRecognition.onerror=(e)=>{if(e.error!=='no-speech')console.error('TR err:',e.error);};
-  trRecognition.onend=()=>{isTrListening=false;const btn=document.getElementById('trSpeakBtn');btn.textContent='🇹🇷 Türkçe Konuş → İngilizceye Çevir';btn.classList.remove('active');document.getElementById('trInterim').textContent='';};
+  trRecognition.onend=()=>{isTrListening=false;document.getElementById('trSpeakBtn').textContent='🇹🇷 Türkçe Konuş → İngilizceye Çevir';document.getElementById('trSpeakBtn').classList.remove('active');document.getElementById('trInterim').textContent='';};
   return true;
 }
 function toggleTrSpeak() {
-  if (!getApiKey()) { alert('Lütfen önce API anahtarını kaydedin!'); return; }
+  if(!getApiKey()){alert('Lütfen önce API anahtarını kaydedin!');return;}
   const btn=document.getElementById('trSpeakBtn');
-  if (!isTrListening) { if(!trRecognition&&!setupTrRecognition())return; isTrListening=true; btn.textContent='⏹ Dinleniyor... (durdurmak için tıkla)'; btn.classList.add('active'); document.getElementById('trInterim').textContent='Türkçe konuşun...'; try{trRecognition.start()}catch(e){} }
-  else { isTrListening=false; try{trRecognition.stop()}catch(e){} }
+  if(!isTrListening){if(!trRecognition&&!setupTrRecognition())return;isTrListening=true;btn.textContent='⏹ Dinleniyor... (durdurmak için tıkla)';btn.classList.add('active');document.getElementById('trInterim').textContent='Türkçe konuşun...';try{trRecognition.start()}catch(e){}}
+  else{isTrListening=false;try{trRecognition.stop()}catch(e){}}
 }
 
 // ── QUEUE ──
 async function processNext() {
-  if (isProcessing||processingQueue.length===0) return;
+  if(isProcessing||processingQueue.length===0)return;
   isProcessing=true;
   const text=processingQueue.shift();
-  if (currentMode==='en-tr') await processEN(text); else await processTR(text);
-  isProcessing=false; processNext();
+  if(currentMode==='en-tr')await processEN(text);else await processTR(text);
+  isProcessing=false;processNext();
 }
 
 // ── EN→TR ──
 async function processEN(englishText) {
-  const apiKey=getApiKey(), ts=timestamp();
+  const apiKey=getApiKey(),ts=timestamp();
   const llId=addLoading('leftMessages','Çevriliyor...');
   const rlId=rightPanelVisible?addLoading('rightMessages','Yanıt üretiliyor...'):null;
   setStatus('İŞLENİYOR','processing');
   try {
     const r=await callGroqEN(apiKey,englishText);
-    removeLoading(llId); if(rlId)removeLoading(rlId);
-    const leftRows=[{badge:'badge-en',label:'EN',text:englishText,topColor:'var(--msg-top-en)',textColor:''},{badge:'badge-tr',label:'TR',text:r.translation,topColor:'var(--msg-bot-tr)',textColor:''}];
-    const rightRows=[{badge:'badge-resp',label:'EN',text:r.response,topColor:'var(--msg-top-resp)',textColor:''},{badge:'badge-tr',label:'TR',text:r.responseTr,topColor:'var(--msg-bot-resp-tr)',textColor:''}];
-    addCardDOM('leftMessages',leftRows,ts,'konuşma',null,englishText,r.translation,false);
-    if(rightPanelVisible) addCardDOM('rightMessages',rightRows,ts,'önerilen yanıt',null,r.response,r.responseTr,false);
-    saveToHistory({side:'left',rows:leftRows,time:ts,label:'konuşma',border:null,originalText:englishText,ttsText:r.translation});
-    if(rightPanelVisible) saveToHistory({side:'right',rows:rightRows,time:ts,label:'önerilen yanıt',border:null,originalText:r.response,ttsText:r.responseTr});
-    hideEmpty(); setStatus('DİNLİYOR','listening');
-  } catch(err) { removeLoading(llId); if(rlId)removeLoading(rlId); setStatus('API HATASI','error'); addErrorCard(englishText,err.message,ts); }
+    removeLoading(llId);if(rlId)removeLoading(rlId);
+    const lRows=[{badge:'badge-en',label:'EN',text:englishText,topColor:'var(--msg-top-en)',textColor:''},{badge:'badge-tr',label:'TR',text:r.translation,topColor:'var(--msg-bot-tr)',textColor:''}];
+    const rRows=[{badge:'badge-resp',label:'EN',text:r.response,topColor:'var(--msg-top-resp)',textColor:''},{badge:'badge-tr',label:'TR',text:r.responseTr,topColor:'var(--msg-bot-resp-tr)',textColor:''}];
+    addCardDOM('leftMessages',lRows,ts,'konuşma',null,englishText,r.translation,false);
+    if(rightPanelVisible)addCardDOM('rightMessages',rRows,ts,'önerilen yanıt',null,r.response,r.responseTr,false);
+    saveToHistory({side:'left',rows:lRows,time:ts,label:'konuşma',border:null,originalText:englishText,ttsText:r.translation});
+    if(rightPanelVisible)saveToHistory({side:'right',rows:rRows,time:ts,label:'önerilen yanıt',border:null,originalText:r.response,ttsText:r.responseTr});
+    hideEmpty();setStatus('DİNLİYOR','listening');
+  } catch(err){removeLoading(llId);if(rlId)removeLoading(rlId);setStatus('API HATASI','error');addErrorCard(englishText,err.message,ts);}
 }
 
 // ── TR→EN ──
 async function processTR(turkishText) {
-  const apiKey=getApiKey(), ts=timestamp();
+  const apiKey=getApiKey(),ts=timestamp();
   const llId=addLoading('leftMessages','Çevriliyor...');
   const rlId=rightPanelVisible?addLoading('rightMessages','Yanıt üretiliyor...'):null;
   setStatus('İŞLENİYOR','processing');
   try {
     const r=await callGroqTR(apiKey,turkishText);
-    removeLoading(llId); if(rlId)removeLoading(rlId);
-    const leftRows=[{badge:'badge-tr-input',label:'TR',text:turkishText,topColor:'rgba(255,183,77,0.04)',textColor:'#ffb74d'},{badge:'badge-en',label:'EN',text:r.translation,topColor:'var(--msg-top-en)',textColor:''}];
-    const rightRows=[{badge:'badge-tr-input',label:'TR',text:r.response,topColor:'rgba(255,183,77,0.04)',textColor:'#ffb74d'},{badge:'badge-en',label:'EN',text:r.responseTr,topColor:'var(--msg-top-resp)',textColor:''}];
-    addCardDOM('leftMessages',leftRows,ts,'konuşma',null,turkishText,r.translation,false);
-    if(rightPanelVisible) addCardDOM('rightMessages',rightRows,ts,'önerilen yanıt',null,r.response,r.responseTr,false);
-    saveToHistory({side:'left',rows:leftRows,time:ts,label:'konuşma',border:null,originalText:turkishText,ttsText:r.translation});
-    if(rightPanelVisible) saveToHistory({side:'right',rows:rightRows,time:ts,label:'önerilen yanıt',border:null,originalText:r.response,ttsText:r.responseTr});
-    hideEmpty(); setStatus('DİNLİYOR','listening');
-  } catch(err) { removeLoading(llId); if(rlId)removeLoading(rlId); setStatus('API HATASI','error'); addErrorCard(turkishText,err.message,ts); }
+    removeLoading(llId);if(rlId)removeLoading(rlId);
+    const lRows=[{badge:'badge-tr-input',label:'TR',text:turkishText,topColor:'rgba(255,183,77,0.04)',textColor:'#ffb74d'},{badge:'badge-en',label:'EN',text:r.translation,topColor:'var(--msg-top-en)',textColor:''}];
+    const rRows=[{badge:'badge-tr-input',label:'TR',text:r.response,topColor:'rgba(255,183,77,0.04)',textColor:'#ffb74d'},{badge:'badge-en',label:'EN',text:r.responseTr,topColor:'var(--msg-top-resp)',textColor:''}];
+    addCardDOM('leftMessages',lRows,ts,'konuşma',null,turkishText,r.translation,false);
+    if(rightPanelVisible)addCardDOM('rightMessages',rRows,ts,'önerilen yanıt',null,r.response,r.responseTr,false);
+    saveToHistory({side:'left',rows:lRows,time:ts,label:'konuşma',border:null,originalText:turkishText,ttsText:r.translation});
+    if(rightPanelVisible)saveToHistory({side:'right',rows:rRows,time:ts,label:'önerilen yanıt',border:null,originalText:r.response,ttsText:r.responseTr});
+    hideEmpty();setStatus('DİNLİYOR','listening');
+  } catch(err){removeLoading(llId);if(rlId)removeLoading(rlId);setStatus('API HATASI','error');addErrorCard(turkishText,err.message,ts);}
 }
 
-// ── TR BUTTON / RIGHT TEXT ──
+// ── TR BUTTON ──
 async function processTurkishBtn(turkishText) {
-  const apiKey=getApiKey(), ts=timestamp();
+  const apiKey=getApiKey(),ts=timestamp();
   const loadId=addLoading('rightMessages','İngilizceye çevriliyor...');
   hideEmpty();
   try {
@@ -548,42 +703,39 @@ async function processTurkishBtn(turkishText) {
     const rows=[{badge:'badge-tr-input',label:'TR',text:turkishText,topColor:'rgba(255,183,77,0.04)',textColor:'#ffb74d'},{badge:'badge-en',label:'EN',text:r.english,topColor:'var(--msg-top-en)',textColor:'#ffe082'}];
     addCardDOM('rightMessages',rows,ts,'türkçe → ingilizce','rgba(255,183,77,0.3)',turkishText,r.english,false);
     saveToHistory({side:'right',rows,time:ts,label:'türkçe → ingilizce',border:'rgba(255,183,77,0.3)',originalText:turkishText,ttsText:r.english});
-  } catch(err) {
-    removeLoading(loadId);
-    const el=document.createElement('div'); el.className='msg-card'; el.style.borderColor='#ef5350';
-    el.innerHTML=`<div style="padding:12px 16px;font-size:0.75rem;color:#ef5350;">⚠ Hata: ${escHtml(err.message)}</div>`;
-    appendMsg('rightMessages',el);
-  }
+  } catch(err){removeLoading(loadId);const el=document.createElement('div');el.className='msg-card';el.style.borderColor='#ef5350';el.innerHTML=`<div style="padding:12px 15px;font-size:0.74rem;color:#ef5350;">⚠ Hata: ${escHtml(err.message)}</div>`;appendMsg('rightMessages',el);}
 }
 
 // ── GROQ ──
-async function callGroqEN(k,t){return groqFetch(k,`Someone said in English during a Teams call: "${t}"\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart natural English reply (max 2 sentences)","responseTr":"Turkish translation of the reply"}`,1000);}
-async function callGroqTR(k,t){return groqFetch(k,`Someone said in Turkish during a Teams call: "${t}"\n\nReturn ONLY valid JSON:\n{"translation":"English translation of what was said","response":"Smart natural Turkish reply (max 2 sentences)","responseTr":"English translation of that Turkish reply"}`,1000);}
-async function callGroqSimpleTR(k,t){return groqFetch(k,`Translate this Turkish text to natural English: "${t}"\n\nReturn ONLY valid JSON: {"english":"English translation"}`,400);}
-async function groqFetch(apiKey,prompt,maxTokens) {
-  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxTokens,messages:[{role:'system',content:'Translation assistant. Respond ONLY with valid JSON, no markdown.'},{role:'user',content:prompt}]})});
+function getToneStr(){return TONE_PROMPTS[document.getElementById('toneSelect').value]||TONE_PROMPTS.professional;}
+
+async function callGroqEN(k,t){
+  const glossCtx=buildGlossaryContext();
+  const tone=getToneStr();
+  return groqFetch(k,`Someone said in English during a meeting: "${t}"\n\n${tone}${glossCtx}\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart natural English reply (max 2 sentences)","responseTr":"Turkish translation of the reply"}`,1000);
+}
+async function callGroqTR(k,t){
+  const glossCtx=buildGlossaryContext();
+  const tone=getToneStr();
+  return groqFetch(k,`Someone said in Turkish during a meeting: "${t}"\n\n${tone}${glossCtx}\n\nReturn ONLY valid JSON:\n{"translation":"English translation","response":"Smart natural Turkish reply (max 2 sentences)","responseTr":"English translation of that reply"}`,1000);
+}
+async function callGroqSimpleTR(k,t){
+  const glossCtx=buildGlossaryContext();
+  return groqFetch(k,`Translate Turkish to natural English: "${t}"${glossCtx}\n\nReturn ONLY valid JSON: {"english":"English translation"}`,400);
+}
+async function groqFetch(apiKey,prompt,maxTokens){
+  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:maxTokens,messages:[{role:'system',content:'Translation assistant. Respond ONLY with valid JSON, no markdown, no backticks.'},{role:'user',content:prompt}]})});
   if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||`HTTP ${res.status}`);}
   const data=await res.json();
   return JSON.parse(data.choices[0].message.content.replace(/```json|```/g,'').trim());
 }
 
 // ── HISTORY ──
-function saveToHistory(entry) {
-  const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
-  h.unshift({...entry,ts:Date.now()});
-  if(h.length>200)h.pop();
-  localStorage.setItem(HISTORY_KEY,JSON.stringify(h));
-  showToast('✓ Kaydedildi');
-}
-function restoreHistory() {
-  const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');
-  if(!h.length)return;
-  hideEmpty();
-  h.slice(0,20).reverse().forEach(e=>{
-    addCardDOM(e.side==='left'?'leftMessages':'rightMessages',e.rows,e.time,e.label,e.border,e.originalText,e.ttsText,true);
-  });
-}
-function showToast(msg){const t=document.getElementById('historyToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function saveToHistory(entry){const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');h.unshift({...entry,ts:Date.now()});if(h.length>200)h.pop();localStorage.setItem(HISTORY_KEY,JSON.stringify(h));}
+function restoreHistory(){const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');if(!h.length)return;hideEmpty();h.slice(0,20).reverse().forEach(e=>{addCardDOM(e.side==='left'?'leftMessages':'rightMessages',e.rows,e.time,e.label,e.border,e.originalText,e.ttsText,true);});}
+
+// ── TOAST ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 
 // ── COPY & TTS ──
 function copyText(text,btn){navigator.clipboard.writeText(text).then(()=>{btn.textContent='✓ Kopyalandı';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 Kopyala';btn.classList.remove('copied');},2000);});}
@@ -592,9 +744,9 @@ function speakText(text,lang,btn){if(!window.speechSynthesis)return;if(currentUt
 
 // ── DOM ──
 function addCardDOM(containerId,rows,time,label,borderColor,copyText_,ttsText,isRestored){
-  const el=document.createElement('div'); el.className='msg-card';
+  const el=document.createElement('div');el.className='msg-card';
   if(borderColor)el.style.borderColor=borderColor;
-  if(isRestored)el.style.opacity='0.7';
+  if(isRestored)el.style.opacity='0.65';
   let html='';
   rows.forEach((row,i)=>{
     const cls=i===0?'msg-row-top':'msg-row-bot';
@@ -602,10 +754,10 @@ function addCardDOM(containerId,rows,time,label,borderColor,copyText_,ttsText,is
     html+=`<div class="${cls}" style="background:${row.topColor};${extra}"><span class="lang-badge ${row.badge}">${row.label}</span>${escHtml(row.text)}</div>`;
   });
   const ttsLang=rows[0].badge==='badge-en'?'en-US':'tr-TR';
-  html+=`<div class="msg-meta"><span>${time}${isRestored?' · geçmiş':''}</span><span style="display:flex;gap:5px;align-items:center;"><button class="tts-btn" onclick="speakText('${escAttr(ttsText||copyText_||'')}','${ttsLang}',this)">🔊</button><button class="copy-btn" onclick="copyText('${escAttr(copyText_||'')}',this)">📋 Kopyala</button></span></div>`;
-  el.innerHTML=html; appendMsg(containerId,el);
+  html+=`<div class="msg-meta"><span>${time}${isRestored?' · geçmiş':''}</span><span style="display:flex;gap:4px;align-items:center;"><button class="tts-btn" onclick="speakText('${escAttr(ttsText||copyText_||'')}','${ttsLang}',this)">🔊</button><button class="copy-btn" onclick="copyText('${escAttr(copyText_||'')}',this)">📋 Kopyala</button></span></div>`;
+  el.innerHTML=html;appendMsg(containerId,el);
 }
-function addErrorCard(text,errMsg,time){const el=document.createElement('div');el.className='msg-card';el.style.borderColor='#ef5350';el.innerHTML=`<div class="msg-row-top" style="opacity:0.5">${escHtml(text)}</div><div style="padding:10px 14px;font-size:0.74rem;color:#ef5350;">⚠ API Hatası: ${escHtml(errMsg)}</div><div class="msg-meta"><span>${time}</span><span>hata</span></div>`;appendMsg('leftMessages',el);}
+function addErrorCard(text,errMsg,time){const el=document.createElement('div');el.className='msg-card';el.style.borderColor='#ef5350';el.innerHTML=`<div class="msg-row-top" style="opacity:0.5">${escHtml(text)}</div><div style="padding:9px 13px;font-size:0.73rem;color:#ef5350;">⚠ API Hatası: ${escHtml(errMsg)}</div><div class="msg-meta"><span>${time}</span><span>hata</span></div>`;appendMsg('leftMessages',el);}
 let loadCounter=0;
 function addLoading(cid,label){const id='load-'+(++loadCounter);const el=document.createElement('div');el.className='loading-card';el.id=id;el.innerHTML=`<div class="loading-dots"><span></span><span></span><span></span></div><span class="loading-text">${label}</span>`;appendMsg(cid,el);return id;}
 function removeLoading(id){document.getElementById(id)?.remove();}
@@ -616,10 +768,10 @@ function clearAll(){
   document.getElementById('leftMessages').innerHTML='';
   document.getElementById('rightMessages').innerHTML='';
   const le=document.createElement('div');le.className='empty-state';le.id='leftEmpty';
-  le.innerHTML=`<div class="empty-icon">🎙️</div><div id="leftEmptyText">Ses veya yazı bekleniyor...</div><div class="empty-hint" id="leftEmptyHint">${currentMode==='en-tr'?'Başlat düğmesine bas ve konuş, ya da aşağıya yaz':'Başlat düğmesine bas ve konuş, ya da aşağıya yaz'}</div>`;
+  le.innerHTML=`<div class="empty-icon">🎙️</div><div id="leftEmptyText">Ses veya yazı bekleniyor...</div><div class="empty-hint" id="leftEmptyHint">Başlat'a bas ve konuş, ya da aşağıya yaz</div>`;
   document.getElementById('leftMessages').appendChild(le);
   const re=document.createElement('div');re.className='empty-state';re.id='rightEmpty';
-  re.innerHTML=`<div class="empty-icon">💬</div><div>Yanıt bekleniyor...</div><div class="empty-hint">Konuşma algılandığında burada görünür</div>`;
+  re.innerHTML=`<div class="empty-icon">💬</div><div>Yanıt bekleniyor...</div><div class="empty-hint">Konuşma algılandığında AI yanıt önerisi burada görünür</div>`;
   document.getElementById('rightMessages').appendChild(re);
   document.getElementById('interimText').textContent=isListening?(currentMode==='en-tr'?'İngilizce bekliyorum...':'Türkçe bekliyorum...'):'Dinleme başlatılmadı';
 }
