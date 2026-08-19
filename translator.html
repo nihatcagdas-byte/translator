@@ -965,17 +965,22 @@ async function processTrBtn(text){
 }
 
 // ── GROQ API ───────────────────────────────────
-function getTone(){return TONES[document.getElementById('toneSelect').value]||TONES.professional;}
+function getTone(){
+  return TONES[document.getElementById('toneSelect').value] || TONES.professional;
+}
 
-async function groqEN(k,t){
-  return call(k,`Someone said in English during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart English reply (max 2 sentences)","responseTr":"Turkish translation of reply"}`,1000);
+async function groqEN(k, t) {
+  return call(k, `Someone said in English during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart English reply (max 2 sentences)","responseTr":"Turkish translation of reply"}`, 1000);
 }
-async function groqTR(k,t){
-  return call(k,`Someone said in Turkish during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"English translation","response":"Smart Turkish reply (max 2 sentences)","responseTr":"English translation of reply"}`,1000);
+
+async function groqTR(k, t) {
+  return call(k, `Someone said in Turkish during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"English translation","response":"Smart Turkish reply (max 2 sentences)","responseTr":"English translation of reply"}`, 1000);
 }
-async function groqSimpleTR(k,t){
-  return call(k,`Translate Turkish to English: "${t}"${glossaryCtx()}\n\nReturn ONLY valid JSON: {"english":"English translation"}`,400);
+
+async function groqSimpleTR(k, t) {
+  return call(k, `Translate Turkish to English: "${t}"${glossaryCtx()}\n\nReturn ONLY valid JSON: {"english":"English translation"}`, 400);
 }
+
 async function call(apiKey, prompt, maxTokens) {
   try {
     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -1007,27 +1012,9 @@ async function call(apiKey, prompt, maxTokens) {
 
     return await res.json();
   } catch (error) {
-    console.error("İşlem sırasında hata oluştu:", error);
-    throw error;
-  }
-}
-
-          }
-        ]
-      })
-    });
-
-    if (!res.ok) {
-      throw new Error(`API Hatası: ${res.status} - ${res.statusText}`);
-    }
-
-    return await res.json();
-  } catch (error) {
     console.error("Çeviri işlemi sırasında hata oluştu:", error);
     throw error;
   }
-}
-
 }
 
 // ── DOM HELPERS ────────────────────────────────
