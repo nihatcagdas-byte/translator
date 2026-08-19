@@ -963,40 +963,10 @@ async function processTrBtn(text){
     addErrCard('rightMsg',text,e.message,ts);
   }
 }
-
 // ── GROQ API ───────────────────────────────────
-function getTone(){
-  return TONES[document.getElementById('toneSelect').value] || TONES.professional;
-}
+// Groq API entegrasyonu ve yardımcı arayüz fonksiyonları (getTone, groqEN, groqTR, call ve yardımcı utils fonksiyonları) buraya eklenmelidir.
 
-async function groqEN(k, t) {
-  return call(k, `Someone said in English during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart English reply (max 2 sentences)","responseTr":"Turkish translation of reply"}`, 1000);
-}
 
-async function groqTR(k, t) {
-  return call(k, `Someone said in Turkish during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"English translation","response":"Smart Turkish reply (max 2 sentences)","responseTr":"English translation of reply"}`, 1000);
-}
-
-async function groqSimpleTR(k, t) {
-  return call(k, `Translate Turkish to English: "${t}"${glossaryCtx()}\n\nReturn ONLY valid JSON: {"english":"English translation"}`, 400);
-}
-
-async function call(apiKey, prompt, maxTokens) {
-  try {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + apiKey
-      },
-      body: JSON.stringify({
-        model: 'qwen/qwen3.6-27b', // Kapatılan model yerine çalışan en zeki ve güncel model
-        max_tokens: maxTokens,
-        messages: [
-          { 
-            role: 'system', 
-            content: 'Translation assistant. Respond ONLY with valid JSON. No markdown, no backticks.' 
-          },
           { 
             role: 'user', 
             content: prompt 
