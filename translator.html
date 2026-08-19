@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Translator v4.0</title>
+<title>Live Translator v4.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* ─── RESET ─────────────────────────────────── */
@@ -402,7 +402,7 @@ header{
   <div class="logo">
     <div class="logo-dot"></div>
     LIVE TRANSLATOR
-    <span class="version-badge">v4.0</span>
+    <span class="version-badge">v4.1</span>
   </div>
   <div class="controls">
     <div class="api-group">
@@ -963,28 +963,31 @@ async function processTrBtn(text){
     addErrCard('rightMsg',text,e.message,ts);
   }
 }
+
 // ── GROQ API ───────────────────────────────────
-// Groq API entegrasyonu ve yardımcı arayüz fonksiyonları (getTone, groqEN, groqTR, call ve yardımcı utils fonksiyonları) buraya eklenmelidir.
+function getTone(){return TONES[document.getElementById('toneSelect').value]||TONES.professional;}
 
-
-          { 
-            role: 'user', 
-            content: prompt 
-          }
-        ]
-      })
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(`API Hatası: ${res.status} - ${errorData.error?.message || res.statusText}`);
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error("Çeviri işlemi sırasında hata oluştu:", error);
-    throw error;
-  }
+async function groqEN(k,t){
+  return call(k,`Someone said in English during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"Turkish translation","response":"Smart English reply (max 2 sentences)","responseTr":"Turkish translation of reply"}`,1000);
+}
+async function groqTR(k,t){
+  return call(k,`Someone said in Turkish during a meeting: "${t}"\n\n${getTone()}${glossaryCtx()}\n\nReturn ONLY valid JSON:\n{"translation":"English translation","response":"Smart Turkish reply (max 2 sentences)","responseTr":"English translation of reply"}`,1000);
+}
+async function groqSimpleTR(k,t){
+  return call(k,`Translate Turkish to English: "${t}"${glossaryCtx()}\n\nReturn ONLY valid JSON: {"english":"English translation"}`,400);
+}
+async function call(apiKey,prompt,maxTokens){
+  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+    body:JSON.stringify({model:'openai/gpt-oss-120b',max_tokens:maxTokens,messages:[
+      {role:'system',content:'Translation assistant. Respond ONLY with valid JSON. No markdown, no backticks.'},
+      {role:'user',content:prompt}
+    ]})
+  });
+  if(!res.ok){const e=await res.json().catch(()=>{});throw new Error(e?.error?.message||'HTTP '+res.status);}
+  const d=await res.json();
+  return JSON.parse(d.choices[0].message.content.replace(/```json|```/g,'').trim());
 }
 
 // ── DOM HELPERS ────────────────────────────────
