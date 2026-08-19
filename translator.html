@@ -985,7 +985,7 @@ async function call(apiKey, prompt, maxTokens) {
         'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b', // Şu anki en zeki ve güçlü model
+        model: 'qwen/qwen3.6-27b', // Kapatılan model yerine çalışan en zeki ve güncel model
         max_tokens: maxTokens,
         messages: [
           { 
@@ -995,6 +995,23 @@ async function call(apiKey, prompt, maxTokens) {
           { 
             role: 'user', 
             content: prompt 
+          }
+        ]
+      })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`API Hatası: ${res.status} - ${errorData.error?.message || res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("İşlem sırasında hata oluştu:", error);
+    throw error;
+  }
+}
+
           }
         ]
       })
